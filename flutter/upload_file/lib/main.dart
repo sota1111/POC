@@ -23,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   File? _file;
+  String _responseText = "No response yet";
 
   void _chooseFile() {
     FileUploadInputElement uploadInput = FileUploadInputElement();
@@ -65,6 +66,26 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _getData() async {
+    try {
+      final response = await http.get(Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/hello'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _responseText = json.decode(response.body)['message'];
+        });
+      } else {
+        setState(() {
+          _responseText = 'Failed to get data';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _responseText = 'Exception occurred: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,13 +96,20 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             ElevatedButton(
               onPressed: _chooseFile,
-              child: Text("ファイル選択"),
+              child: Text("Choose File"),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _uploadFile,
-              child: Text("送信"),
+              child: Text("Upload"),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _getData,
+              child: Text("GET Data"),
+            ),
+            SizedBox(height: 20),
+            Text("Response: $_responseText"),
           ],
         ),
       ),
