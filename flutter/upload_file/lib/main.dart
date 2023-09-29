@@ -25,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Uint8List? _fileBytes;  // To store the file bytes
   String? _fileName;  // To store the file name
+  int? _statusCode;
   String _responseText = "No response yet";
 
   void _chooseFile() async {
@@ -46,13 +47,22 @@ class _HomeScreenState extends State<HomeScreen> {
       final base64Data = base64Encode(_fileBytes!);
 
       final response = await http.post(
-        Uri.parse('YOUR_AWS_LAMBDA_ENDPOINT_HERE'),
+        Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/upload'),
         body: jsonEncode({
           'file_name': _fileName,
           'file_data': base64Data,
         }),
         headers: {"Content-Type": "application/json"},
       );
+
+      setState(() {
+        _statusCode = response.statusCode;
+      });
+      var responseBody = jsonDecode(response.body);
+      var serverMessage = responseBody['message'];
+
+      print("Server Message: $serverMessage");  // Print server message
+      print("Status Code: $_statusCode");  // Print status code
 
       if (response.statusCode == 200) {
         print("File uploaded successfully");
@@ -94,7 +104,9 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: _chooseFile,
               child: Text("Choose File"),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
+            Text("Selected File: $_fileName"), // Show selected file name
+            SizedBox(height: 10),
             ElevatedButton(
               onPressed: _uploadFile,
               child: Text("Upload"),
