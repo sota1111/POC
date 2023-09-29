@@ -1,5 +1,6 @@
 import json
 import base64
+import boto3
 
 def lambda_handler(event, context):
     print(f"call upload:")
@@ -13,7 +14,14 @@ def lambda_handler(event, context):
 
         
         print(f"call upload:{file_name}")
-        
+
+        # S3クライアントを初期化
+        s3 = boto3.client('s3')
+
+        # S3にファイルをアップロード
+        bucket_name = 'log-robot-data'  # 自分のS3バケット名に変更してください
+        s3.put_object(Body=file_data, Bucket=bucket_name, Key=file_name)
+
         return {
             "statusCode": 200,
             "headers": {
@@ -34,4 +42,3 @@ def lambda_handler(event, context):
                 "message": f"Failed to upload file: {str(e)}",
             }),
         }
-

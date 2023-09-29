@@ -32,6 +32,9 @@ Resources:
       CodeUri: file_upload/  # この関数のコードが格納されているディレクトリ
       Handler: upload.lambda_handler # この関数のハンドラ
       Runtime: python3.9
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess  # S3へのフルアクセス権限を追加
       Events:
         FileUpload:
           Type: Api
