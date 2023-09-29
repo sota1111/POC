@@ -26,6 +26,21 @@ Resources:
             RestApiId: 
               Ref: ApiGatewayApi
 
+  FileUploadFunction: # 新しいLambda関数
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: file_upload/  # この関数のコードが格納されているディレクトリ
+      Handler: upload.lambda_handler # この関数のハンドラ
+      Runtime: python3.9
+      Events:
+        FileUpload:
+          Type: Api
+          Properties:
+            Path: /upload  # 新しいエンドポイント
+            Method: post  # POSTメソッド
+            RestApiId: 
+              Ref: ApiGatewayApi
+
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
