@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:typed_data';  // Added for Uint8List
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:file_picker/file_picker.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,47 +23,42 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  File? _file;
+  Uint8List? _fileBytes;  // To store the file bytes
+  String? _fileName;  // To store the file name
   String _responseText = "No response yet";
 
-  void _chooseFile() {
-    FileUploadInputElement uploadInput = FileUploadInputElement();
-    uploadInput.click();
+  void _chooseFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
 
-    uploadInput.onChange.listen((e) {
-      final files = uploadInput.files;
-      if (files != null && files.length > 0) {
-        final file = files[0];
-        setState(() {
-          _file = file;
-        });
-      }
-    });
+    if (result != null) {
+      setState(() {
+        _fileBytes = result.files.first.bytes;
+        _fileName = result.files.first.name;
+      });
+    }
   }
 
   void _uploadFile() async {
-    if (_file != null) {
-      final reader = FileReader();
-      reader.readAsDataUrl(_file!);
-      reader.onLoadEnd.listen((event) async {
-        final content = reader.result as String;
-        final base64Data = content.split(",").last;
+    if (_fileBytes != null && _fileName != null) {
+      final base64Data = base64Encode(_fileBytes!);
 
-        final response = await http.post(
-          Uri.parse('YOUR_AWS_LAMBDA_ENDPOINT_HERE'),
-          body: jsonEncode({
-            'file_name': _file!.name,
-            'file_data': base64Data,
-          }),
-          headers: {"Content-Type": "application/json"},
-        );
+      final response = await http.post(
+        Uri.parse('YOUR_AWS_LAMBDA_ENDPOINT_HERE'),
+        body: jsonEncode({
+          'file_name': _fileName,
+          'file_data': base64Data,
+        }),
+        headers: {"Content-Type": "application/json"},
+      );
 
-        if (response.statusCode == 200) {
-          print("File uploaded successfully");
-        } else {
-          print("Failed to upload file");
-        }
-      });
+      if (response.statusCode == 200) {
+        print("File uploaded successfully");
+      } else {
+        print("Failed to upload file");
+      }
     }
   }
 
