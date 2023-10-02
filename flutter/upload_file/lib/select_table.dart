@@ -16,21 +16,45 @@ Future<List<Map<String, dynamic>>> fetchDataFromLambda() async {
   }
 }
 
-class DataTableExample extends StatelessWidget {
+class DataTableExample extends StatefulWidget {
   final List<Map<String, dynamic>> data;
 
   DataTableExample({required this.data});
 
   @override
+  _DataTableExampleState createState() => _DataTableExampleState();
+}
+
+class _DataTableExampleState extends State<DataTableExample> {
+  List<bool> selectedRows = [];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedRows = List<bool>.generate(widget.data.length, (index) => false);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DataTable(
       columns: const [
+        //DataColumn(label: Text('')), // チェックボックス用の列
         DataColumn(label: Text('ID')),
         DataColumn(label: Text('Name')),
         DataColumn(label: Text('Age')),
       ],
-      rows: data.map((item) {
+      rows: widget.data.asMap().entries.map((entry) {
+        int index = entry.key;
+        Map<String, dynamic> item = entry.value;
         return DataRow(
+          selected: selectedRows[index],
+          onSelectChanged: (bool? value) {
+            setState(() {
+              if (value != null) {
+                selectedRows[index] = value;
+              }
+            });
+          },
           cells: [
             DataCell(Text(item['id'].toString())),
             DataCell(Text(item['name'].toString())),
