@@ -16,7 +16,6 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   String? _selectedFileName;
   int? _uploadStatusCode;
   String _uploadResponse = "";
-  String _plotResponse ="";
   String _serverResponse = "";
 
   // Pick a CSV file
@@ -53,7 +52,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   // Perform the actual file upload
   Future<http.Response> _performFileUpload(String base64FileData) {
     return http.post(
-      Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/upload'),
+      Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/upload_plot'),
       body: jsonEncode({
         'file_name': _selectedFileName,
         'file_data': base64FileData,
@@ -77,37 +76,6 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
       debugPrint("File uploaded successfully");
     } else {
       debugPrint("Failed to upload file");
-    }
-  }
-
-  // plot csv graph
-  Future<void> _plotCsv() async {
-    print("plot");
-    try {
-      final response = await http.post(
-        Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/plot_csv'),
-        body: jsonEncode({
-        }),
-        headers: {"Content-Type": "application/json"},
-      );
-      var responseBody = jsonDecode(response.body);
-      _plotResponse = responseBody['message'];
-      debugPrint("Server Message: $_plotResponse");
-      debugPrint("Status Code: $_plotResponse");
-
-      if (response.statusCode == 200) {
-        setState(() {
-          //_plotResponse = json.decode(response.body)['message'];
-        });
-      } else {
-        setState(() {
-          //_plotResponse = 'Fail';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _plotResponse = 'Exception occurred: $e';
-      });
     }
   }
 
@@ -153,16 +121,6 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
                   ],
                 ),
                 const SizedBox(width: 150),
-                Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: _fetchServerData,
-                      child: const Text("GET Data"),
-                    ),
-                    const SizedBox(height: 10),
-                    Text("Response: $_serverResponse"),
-                  ],
-                ),
               ],
             ),
             const SizedBox(height: 50),
@@ -171,17 +129,19 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
               children: [
                 ElevatedButton(
                   onPressed: _sendFileToServer,
-                  child: const Text("Upload CSV File"),
-                ),
-                const SizedBox(width: 50),
-                ElevatedButton(
-                  onPressed: _sendFileToServer,
-                  child: const Text("Upload JPG File"),
+                  child: const Text("Upload File"),
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Text("Server Massage: $_uploadResponse"),
+            const SizedBox(height: 50),
+            ElevatedButton(
+              onPressed: _fetchServerData,
+              child: const Text("GET Data"),
+            ),
+            const SizedBox(height: 10),
+            Text("Response: $_serverResponse"),
           ],
         ),
       ),
