@@ -17,6 +17,10 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   int? _uploadStatusCode;
   String _uploadResponse = "";
   String _serverResponse = "";
+  int? _selectedMonth;
+  int? _selectedDay;
+  int? _selectedNumber;
+
 
   // Pick a CSV file
   void _pickCsvFile() async {
@@ -35,14 +39,16 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
 
   // Send the file to the server
   void _sendFileToServer() async {
-    if (_selectedFileBytes == null || _selectedFileName == null) {
+    if (_selectedFileBytes == null || _selectedFileName == null || _selectedMonth == null || _selectedDay == null || _selectedNumber == null) {
       setState(() {
-        _uploadResponse = "No file selected";
+        _uploadResponse = "選択していない項目があります";
       });
       debugPrint("No file selected");
       return;
     }
-
+    setState(() {
+      _uploadResponse = "ファイルをupload中";
+    });
     final base64FileData = base64Encode(_selectedFileBytes!);
     final response = await _performFileUpload(base64FileData);
 
@@ -108,6 +114,60 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                // 月を選択するためのドロップダウン
+                DropdownButton<int>(
+                  hint: Text('月'),
+                  value: _selectedMonth,
+                  items: List.generate(12, (index) {
+                    return DropdownMenuItem<int>(
+                      value: index + 1,
+                      child: Text((index + 1).toString()),
+                    );
+                  }),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedMonth = newValue;
+                    });
+                  },
+                ),
+                Text("/"),
+                // 日を選択するためのドロップダウン
+                DropdownButton<int>(
+                  hint: Text('日'),
+                  value: _selectedDay,
+                  items: List.generate(31, (index) {
+                    return DropdownMenuItem<int>(
+                      value: index + 1,
+                      child: Text((index + 1).toString()),
+                    );
+                  }),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedDay = newValue;
+                    });
+                  },
+                ),
+                Text("番号："),
+                DropdownButton<int>(
+                  hint: Text('number'),
+                  value: _selectedNumber,
+                  items: List.generate(20, (index) {
+                    return DropdownMenuItem<int>(
+                      value: index + 1,
+                      child: Text((index + 1).toString()),
+                    );
+                  }),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedNumber = newValue;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Column(
