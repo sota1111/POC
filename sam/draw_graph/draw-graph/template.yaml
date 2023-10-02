@@ -99,6 +99,24 @@ Resources:
             RestApiId: 
               Ref: ApiGatewayApi
 
+  DataListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: plot_data/
+      Handler: data_list.lambda_handler
+      Runtime: python3.9
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess
+      Events:
+        DataList:
+          Type: Api
+          Properties:
+            Path: /data_list
+            Method: get
+            RestApiId: 
+              Ref: ApiGatewayApi
+
   DownloadPlotFunction:
     Type: AWS::Serverless::Function
     Properties:
