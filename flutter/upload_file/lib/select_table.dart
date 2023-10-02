@@ -36,52 +36,58 @@ class _DataTableExampleState extends State<DataTableExample> {
 
   @override
   Widget build(BuildContext context) {
-    return DataTable(
-      headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-        return Colors.deepPurple;
-      }),
-      columns: [
-        DataColumn(
-          label: Container(
-            color: Colors.deepPurple,
-            child: const Text('ID',style: TextStyle(color: Colors.white),
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical, // 垂直方向にスクロール
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal, // 水平方向にスクロール
+        child: DataTable(
+          headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+            return Colors.deepPurple;
+          }),
+          columns: [
+            DataColumn(
+              label: Container(
+                color: Colors.deepPurple,
+                child: const Text('ID',style: TextStyle(color: Colors.white),
+                ),
+              ),
             ),
-          ),
-        ),
-        DataColumn(
-          label: Container(
-            color: Colors.deepPurple,
-            child: const Text('Name',style: TextStyle(color: Colors.white),
+            DataColumn(
+              label: Container(
+                color: Colors.deepPurple,
+                child: const Text('Name',style: TextStyle(color: Colors.white),
+                ),
+              ),
             ),
-          ),
-        ),
-        DataColumn(
-          label: Container(
-            color: Colors.deepPurple,
-            child: const Text('Age',style: TextStyle(color: Colors.white),
+            DataColumn(
+              label: Container(
+                color: Colors.deepPurple,
+                child: const Text('Age',style: TextStyle(color: Colors.white),
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
-      rows: widget.data.asMap().entries.map((entry) {
-        int index = entry.key;
-        Map<String, dynamic> item = entry.value;
-        return DataRow(
-          selected: selectedRows[index],
-          onSelectChanged: (bool? value) {
-            setState(() {
-              if (value != null) {
-                selectedRows[index] = value;
-              }
-            });
-          },
-          cells: [
-            DataCell(Text(item['id'].toString())),
-            DataCell(Text(item['name'].toString())),
-            DataCell(Text(item['age'].toString())),
           ],
-        );
-      }).toList(),
+          rows: widget.data.asMap().entries.map((entry) {
+            int index = entry.key;
+            Map<String, dynamic> item = entry.value;
+            return DataRow(
+              selected: selectedRows[index],
+              onSelectChanged: (bool? value) {
+                setState(() {
+                  if (value != null) {
+                    selectedRows[index] = value;
+                  }
+                });
+              },
+              cells: [
+                DataCell(Text(item['id'].toString())),
+                DataCell(Text(item['name'].toString())),
+                DataCell(Text(item['age'].toString())),
+              ],
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }
