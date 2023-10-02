@@ -55,19 +55,23 @@ class _PlotDataState extends State<PlotDataPage> {
           Expanded(
             child: FileUploaderScreen(),
           ),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: fetchDataFromLambda(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                return Expanded(
-                  child: DataTableExample(data: snapshot.data!),
-                );
-              }
-            },
+          Column(
+            children: [
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchDataFromLambda(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return Expanded(
+                      child: DataTableExample(data: snapshot.data!),
+                    );
+                  }
+                },
+              ),
+            ],
           ),
           Expanded(
             child: FileDownloaderScreen(selectedDate: selectedDate),
