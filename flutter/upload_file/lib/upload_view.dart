@@ -135,40 +135,53 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ElevatedButton(
-              onPressed: _pickCsvFile,
-              child: const Text("Choose File"),
+            Row(
+              children: [
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _pickCsvFile,
+                      child: const Text("Choose File"),
+                    ),
+                    const SizedBox(height: 10),
+                    Text("Selected File: $_selectedFileName"),
+                  ],
+                ),
+                const SizedBox(width: 150),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _fetchServerData,
+                      child: const Text("GET Data"),
+                    ),
+                    const SizedBox(height: 10),
+                    Text("Response: $_serverResponse"),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text("Selected File: $_selectedFileName"),
             const SizedBox(height: 50),
-
-            ElevatedButton(
-              onPressed: _sendFileToServer,
-              child: const Text("Upload"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: _sendFileToServer,
+                  child: const Text("Upload CSV File"),
+                ),
+                const SizedBox(width: 50),
+                ElevatedButton(
+                  onPressed: _sendFileToServer,
+                  child: const Text("Upload JPG File"),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             Text("Server Massage: $_uploadResponse"),
-            const SizedBox(height: 50),
-
-            ElevatedButton(
-              onPressed: _plotCsv,
-              child: const Text("Plot"),
-            ),
-            const SizedBox(height: 10),
-            Text("Server Massage: $_plotResponse"),
-            const SizedBox(height: 50),
-
-            ElevatedButton(
-              onPressed: _fetchServerData,
-              child: const Text("GET Data"),
-            ),
-            const SizedBox(height: 10),
-            Text("Response: $_serverResponse"),
           ],
         ),
       ),
