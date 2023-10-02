@@ -7,7 +7,7 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 10
     MemorySize: 128
 
 Resources:
@@ -26,21 +26,39 @@ Resources:
             RestApiId: 
               Ref: ApiGatewayApi
 
-  FileUploadFunction: # 新しいLambda関数
+  FileUploadFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: file_upload/  # この関数のコードが格納されているディレクトリ
-      Handler: upload.lambda_handler # この関数のハンドラ
+      CodeUri: plot_data/  # upload関数のコードディレクトリ
+      Handler: upload.lambda_handler
       Runtime: python3.9
       Policies:
         - AmazonDynamoDBFullAccess
-        - AmazonS3FullAccess  # S3へのフルアクセス権限を追加
+        - AmazonS3FullAccess
       Events:
         FileUpload:
           Type: Api
           Properties:
-            Path: /upload  # 新しいエンドポイント
-            Method: post  # POSTメソッド
+            Path: /upload
+            Method: post
+            RestApiId: 
+              Ref: ApiGatewayApi
+
+  PlotCsvFunction:  # 新しいLambda関数を追加
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: plot_data/  # plot_csv関数のコードディレクトリ
+      Handler: plot_csv.lambda_handler  # 新しいハンドラ
+      Runtime: python3.9
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess
+      Events:
+        PlotCsv:
+          Type: Api
+          Properties:
+            Path: /plot_csv
+            Method: post
             RestApiId: 
               Ref: ApiGatewayApi
 

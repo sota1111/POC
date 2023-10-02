@@ -3,7 +3,7 @@ import base64
 import boto3
 
 def lambda_handler(event, context):
-    print(f"call upload:")
+    print(f"call upload")
     try:
         # データをJSONとしてパース
         body = json.loads(event['body'])

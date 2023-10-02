@@ -16,6 +16,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   String? _selectedFileName;
   int? _uploadStatusCode;
   String _uploadResponse = "";
+  String _plotResponse ="";
   String _serverResponse = "";
 
   // Pick a CSV file
@@ -79,6 +80,37 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
     }
   }
 
+  // plot csv graph
+  Future<void> _plotCsv() async {
+    print("plot");
+    try {
+      final response = await http.post(
+        Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/plot_csv'),
+        body: jsonEncode({
+        }),
+        headers: {"Content-Type": "application/json"},
+      );
+      var responseBody = jsonDecode(response.body);
+      _plotResponse = responseBody['message'];
+      debugPrint("Server Message: $_plotResponse");
+      debugPrint("Status Code: $_plotResponse");
+
+      if (response.statusCode == 200) {
+        setState(() {
+          //_plotResponse = json.decode(response.body)['message'];
+        });
+      } else {
+        setState(() {
+          //_plotResponse = 'Fail';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _plotResponse = 'Exception occurred: $e';
+      });
+    }
+  }
+
   // Fetch data from the server
   Future<void> _fetchServerData() async {
     try {
@@ -115,6 +147,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
             const SizedBox(height: 10),
             Text("Selected File: $_selectedFileName"),
             const SizedBox(height: 50),
+
             ElevatedButton(
               onPressed: _sendFileToServer,
               child: const Text("Upload"),
@@ -122,6 +155,15 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
             const SizedBox(height: 10),
             Text("Server Massage: $_uploadResponse"),
             const SizedBox(height: 50),
+
+            ElevatedButton(
+              onPressed: _plotCsv,
+              child: const Text("Plot"),
+            ),
+            const SizedBox(height: 10),
+            Text("Server Massage: $_plotResponse"),
+            const SizedBox(height: 50),
+
             ElevatedButton(
               onPressed: _fetchServerData,
               child: const Text("GET Data"),
