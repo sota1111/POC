@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
+import 'config.dart';
 
 class FileUploaderScreen extends StatefulWidget {
   const FileUploaderScreen({super.key});
@@ -57,8 +58,9 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
 
   // Perform the actual file upload
   Future<http.Response> _performFileUpload(String base64FileData) {
+    String apiUrl = '$baseUri/upload_plot';
     return http.post(
-      Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/upload_plot'),
+      Uri.parse(apiUrl),
       body: jsonEncode({
         'file_name': _selectedFileName,
         'file_data': base64FileData,
@@ -88,7 +90,8 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   // Fetch data from the server
   Future<void> _fetchServerData() async {
     try {
-      final response = await http.get(Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/hello'));
+      String apiUrl = '$baseUri/hello';
+      final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
         setState(() {

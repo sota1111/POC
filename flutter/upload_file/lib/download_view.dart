@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
+import 'config.dart';
 
 class FileDownloaderScreen extends StatefulWidget {
   final DateTime? selectedDate;
@@ -21,9 +22,8 @@ class _FileDownloaderScreenState extends State<FileDownloaderScreen> {
     // DateTime? selectedDate = widget.selectedDate;
 
     try {
-      final response = await http.get(
-        Uri.parse('https://3gxeogvzp2.execute-api.ap-northeast-1.amazonaws.com/Prod/download_plot'),
-      );
+      String apiUrl = '$baseUri/download_plot';
+      final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);

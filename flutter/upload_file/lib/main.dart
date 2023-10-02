@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'upload_view.dart';
 import 'download_view.dart';
+import 'select_table.dart';
 
 void main() {
   runApp(PlotDataApp());
@@ -53,6 +54,20 @@ class _PlotDataState extends State<PlotDataPage> {
         children: [
           Expanded(
             child: FileUploaderScreen(),
+          ),
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: fetchDataFromLambda(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return Expanded(
+                  child: DataTableExample(data: snapshot.data!),
+                );
+              }
+            },
           ),
           Expanded(
             child: FileDownloaderScreen(selectedDate: selectedDate),
