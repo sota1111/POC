@@ -114,9 +114,11 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text("月日と番号、ファイルを選択して、送信ボタンを押してください。"),
+            const SizedBox(height: 30),
+
             Row(
               children: [
-                // 月を選択するためのドロップダウン
                 DropdownButton<int>(
                   hint: Text('月'),
                   value: _selectedMonth,
@@ -167,38 +169,26 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: _pickCsvFile,
-                      child: const Text("Choose File"),
-                    ),
-                    const SizedBox(height: 10),
-                    Text("Selected File: $_selectedFileName"),
-                  ],
-                ),
-                const SizedBox(width: 150),
-              ],
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: _pickCsvFile,
+              child: const Text("ファイル選択"),
             ),
-            const SizedBox(height: 50),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ElevatedButton(
-                  onPressed: _sendFileToServer,
-                  child: const Text("Upload File"),
-                ),
-              ],
+            const SizedBox(height: 10),
+            Text("Selected File: $_selectedFileName"),
+            const SizedBox(height: 30),
+
+            ElevatedButton(
+              onPressed: _sendFileToServer,
+              child: const Text("送信"),
             ),
             const SizedBox(height: 10),
             Text("Server Massage: $_uploadResponse"),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
+
             ElevatedButton(
               onPressed: _fetchServerData,
-              child: const Text("GET Data"),
+              child: const Text("動作テスト"),
             ),
             const SizedBox(height: 10),
             Text("Response: $_serverResponse"),
