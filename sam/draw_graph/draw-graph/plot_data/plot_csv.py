@@ -19,17 +19,16 @@ def lambda_handler(event, context):
         })
 
         # データをプロット
-        fig = plt.figure()
-        plt.figure(figsize=(10, 6))
-        plt.plot(df['x'], df['y'], marker='o')
-        plt.title('Sample Plot')
-        plt.xlabel('X-axis')
-        plt.ylabel('Y-axis')
-        plt.grid(True)
+        fig, ax = plt.subplots(figsize=(10, 6))  # この行でfigureとaxesオブジェクトを作成します。
+        ax.plot(df['x'], df['y'], marker='o')
+        ax.set_title('Sample Plot')
+        ax.set_xlabel('X-axis')
+        ax.set_ylabel('Y-axis')
+        ax.grid(True)
 
         print(f"finish plot")
 
-         # プロットをバイトデータとして保存
+        # プロットをバイトデータとして保存
         fig.savefig('/tmp/sample.png')
         client = boto3.client('s3')
         bucket_name = 'log-robot-data'
@@ -38,7 +37,6 @@ def lambda_handler(event, context):
             bucket_name,
             'sample.png'
         )
-
 
         print(f"call upload to S3")
 
