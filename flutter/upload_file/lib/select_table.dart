@@ -37,11 +37,31 @@ class _DataTableExampleState extends State<DataTableExample> {
   @override
   Widget build(BuildContext context) {
     return DataTable(
-      columns: const [
-        //DataColumn(label: Text('')), // チェックボックス用の列
-        DataColumn(label: Text('ID')),
-        DataColumn(label: Text('Name')),
-        DataColumn(label: Text('Age')),
+      headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+        return Colors.deepPurple;
+      }),
+      columns: [
+        DataColumn(
+          label: Container(
+            color: Colors.deepPurple,
+            child: const Text('ID',style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            color: Colors.deepPurple,
+            child: const Text('Name',style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            color: Colors.deepPurple,
+            child: const Text('Age',style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
       ],
       rows: widget.data.asMap().entries.map((entry) {
         int index = entry.key;
