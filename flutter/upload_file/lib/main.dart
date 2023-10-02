@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'upload_view.dart';
+import 'download_view.dart';
 
 void main() {
   runApp(const FileUploaderApp());
@@ -11,7 +12,19 @@ class FileUploaderApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: FileUploaderScreen(),
+      home: Scaffold(
+        appBar: AppBar(title: const Text("File Operations")),
+        body: Row(
+          children: [
+            Expanded(
+              child: FileUploaderScreen(),
+            ),
+            Expanded(
+              child: FileDownloaderScreen(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

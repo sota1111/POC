@@ -135,7 +135,6 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("File Upload")),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
