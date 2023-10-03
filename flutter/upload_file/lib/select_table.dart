@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'config.dart';
 
-Future<List<Map<String, dynamic>>> fetchDataFromLambda(DateTime? selectedDate) async {
+Future<List<Map<String, dynamic>>> fetchDataFromLambda(selectedDate) async {
   String apiUrl = '$baseUri/data_list';
+  print(selectedDate);
   final response = await http.post(
     Uri.parse(apiUrl),
     body: jsonEncode({
-      'experiment_date': "2023-10-3",
+      'experiment_date': selectedDate,
     }),
     headers: {"Content-Type": "application/json"},
   );

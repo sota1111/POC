@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'config.dart';
 
 class FileDownloaderScreen extends StatefulWidget {
-  final DateTime? selectedDate;
+  final String? selectedDate;
 
   const FileDownloaderScreen(this.selectedDate, {Key? key}) : super(key: key);
 

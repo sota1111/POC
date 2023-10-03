@@ -23,6 +23,19 @@ class PlotDataPage extends StatefulWidget {
 
 class _PlotDataState extends State<PlotDataPage> {
   DateTime? selectedDate;
+  String? formattedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    // 初期値として本日の日付を設定
+    selectedDate = DateTime.now();
+    formattedDate = formatDate(selectedDate!);
+  }
+
+  String formatDate(DateTime date) {
+    return "${date.year}-${date.month.toString()}-${date.day.toString()}";
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -31,10 +44,12 @@ class _PlotDataState extends State<PlotDataPage> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
-        selectedDate = picked;
+        selectedDate = DateTime(picked.year, picked.month, picked.day);
+        formattedDate = formatDate(selectedDate!);
       });
+    }
   }
 
   @override
@@ -57,7 +72,7 @@ class _PlotDataState extends State<PlotDataPage> {
             flex: 3, // 3 parts of available space
             child: FileUploaderScreen(),
           ),
-          VerticalDivider(
+          const VerticalDivider(
             color: Colors.grey,
             thickness: 1.0,
           ),
@@ -67,7 +82,7 @@ class _PlotDataState extends State<PlotDataPage> {
             child: Column(
               children: [
                 FutureBuilder<List<Map<String, dynamic>>>(
-                  future: fetchDataFromLambda(selectedDate),
+                  future: fetchDataFromLambda(formattedDate),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
@@ -83,13 +98,13 @@ class _PlotDataState extends State<PlotDataPage> {
               ],
             ),
           ),
-          VerticalDivider(
+          const VerticalDivider(
             color: Colors.grey,
             thickness: 1.0,
           ),
           Expanded(
             flex: 3, // 3 parts of available space
-            child: FileDownloaderScreen(selectedDate),
+            child: FileDownloaderScreen(formattedDate),
           ),
         ],
       )
