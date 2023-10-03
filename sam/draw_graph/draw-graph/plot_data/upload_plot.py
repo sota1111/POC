@@ -63,50 +63,62 @@ def lambda_handler(event, context):
         body = json.loads(event['body'])
         file_data_b64 = body.get('file_data', '')
         file_data = base64.b64decode(file_data_b64)
-        file_name_csv = body.get('file_name', 'unknown.csv')
-        print(f"file_name_csv:{file_name_csv}")
+        file_name = body.get('file_name', '')
+        print(f"file_name:{file_name}")        
         experiment_date = body.get('experiment_date', '2023-10-3')
         print(f"experiment_date:{experiment_date}")
         experiment_number = body.get('experiment_number', '0')
         print(f"experiment_number:{experiment_number}")
         message = body.get('message', 'hello')
         
-        # S3クライアントを初期化
-        s3 = boto3.client('s3')
-        db = boto3.resource('dynamodb')
-        table = db.Table('experiment')
+        _, file_extension = os.path.splitext(file_name)
+        if file_extension == '.csv':
+            file_name_csv = file_name
+            # S3クライアントを初期化
+            s3 = boto3.client('s3')
+            db = boto3.resource('dynamodb')
+            table = db.Table('experiment')
 
-        # S3にcsvファイルをアップロード
-        bucket_name = 'log-robot-data'
-        s3.put_object(Body=file_data, Bucket=bucket_name, Key=file_name_csv)
-        print(f"uploaded csv:{file_name_csv}")
+            # S3にcsvファイルをアップロード
+            bucket_name = 'log-robot-data'
+            s3.put_object(Body=file_data, Bucket=bucket_name, Key=file_name_csv)
+            print(f"uploaded csv:{file_name_csv}")
 
-        # プロット
-        df = pd.read_csv(io.BytesIO(file_data))
-        file_name_png = plot_and_save(df, file_name_csv)
-        print(f"finish plot")
+            # プロット
+            df = pd.read_csv(io.BytesIO(file_data))
+            file_name_png = plot_and_save(df, file_name_csv)
+            print(f"finish plot")
 
-        # S3にpngファイルをアップロード
-        s3.upload_file(f'/tmp/{file_name_png}', bucket_name, file_name_png)
+            # S3にpngファイルをアップロード
+            s3.upload_file(f'/tmp/{file_name_png}', bucket_name, file_name_png)
 
-        item = {
-                'Date': experiment_date,
-                'OrderID': int(experiment_number),
-                'Robot': "0",
-                'file_name_csv': file_name_csv,
-                'file_name_png': file_name_png,
-                'Message': message,
+            item = {
+                    'Date': experiment_date,
+                    'OrderID': int(experiment_number),
+                    'Robot': "0",
+                    'file_name_csv': file_name_csv,
+                    'file_name_png': file_name_png,
+                    'Message': message,
+                }
+            print(f"post_item: {item}")
+            add_date_item(table, item)
+
+            return {
+                "statusCode": 200,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",
+                },
+                "body": json.dumps({
+                    "message": "File uploaded successfully",
+                }),
             }
-        print(f"post_item: {item}")
-        add_date_item(table, item)
-
         return {
-            "statusCode": 200,
+            "statusCode": 400,
             "headers": {
                 "Access-Control-Allow-Origin": "*",
             },
             "body": json.dumps({
-                "message": "File uploaded successfully",
+                "message": "File extension must be csv",
             }),
         }
         
