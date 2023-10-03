@@ -118,7 +118,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("実験日と番号、ファイルを選択して、送信ボタンを押してください。"),
+            const Text("実験日と実験番号、ファイルを選択し、\n送信ボタンを押してください。"),
             const SizedBox(height: 30),
 
             Row(

@@ -37,9 +37,9 @@ class _DataTableExampleState extends State<DataTableExample> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical, // 垂直方向にスクロール
+      scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal, // 水平方向にスクロール
+        scrollDirection: Axis.horizontal,
         child: DataTable(
           headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
             return Colors.deepPurple;
