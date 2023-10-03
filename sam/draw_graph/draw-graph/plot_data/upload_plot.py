@@ -12,10 +12,12 @@ def lambda_handler(event, context):
     try:
         # データをJSONとしてパース
         body = json.loads(event['body'])
-        
         file_data_b64 = body.get('file_data', '')
         file_data = base64.b64decode(file_data_b64)
         file_name = body.get('file_name', 'unknown.csv')
+        file_name = body.get('experiment_date', '2023-10-3')
+        file_name = body.get('experiment_number', '0')
+        file_name = body.get('message', 'hello')
 
         print(f"call upload:{file_name}")
 
@@ -42,14 +44,14 @@ def lambda_handler(event, context):
         print(f"finish plot")
 
         # プロットをバイトデータとして保存
-        png_file_name = os.path.splitext(file_name)[0] + '.png'  # 拡張子を.pngに変更
+        png_file_name = os.path.splitext(file_name)[0] + '.png'
         fig.savefig(f'/tmp/{png_file_name}')
         
         client = boto3.client('s3')
         client.upload_file(
             f'/tmp/{png_file_name}',
             bucket_name,
-            png_file_name  # ここも拡張子を.pngに変更
+            png_file_name
         )
 
         return {
