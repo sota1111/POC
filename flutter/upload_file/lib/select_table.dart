@@ -3,18 +3,26 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'config.dart';
 
-Future<List<Map<String, dynamic>>> fetchDataFromLambda() async {
+Future<List<Map<String, dynamic>>> fetchDataFromLambda(DateTime? selectedDate) async {
   String apiUrl = '$baseUri/data_list';
-  final response = await http.get(Uri.parse(apiUrl));
+  final response = await http.post(
+    Uri.parse(apiUrl),
+    body: jsonEncode({
+      'experiment_date': "2023-10-3",
+    }),
+    headers: {"Content-Type": "application/json"},
+  );
 
   if (response.statusCode == 200) {
     Map<String, dynamic> responseBody = jsonDecode(response.body);
     List<dynamic> data = responseBody['data'];
+    print(data);
     return data.map((dynamic item) => item as Map<String, dynamic>).toList();
   } else {
     throw Exception('Failed to load data');
   }
 }
+
 
 class DataTableExample extends StatefulWidget {
   final List<Map<String, dynamic>> data;
@@ -49,7 +57,7 @@ class _DataTableExampleState extends State<DataTableExample> {
               label: Container(
                 color: Colors.deepPurple,
                 width: 100,
-                child: const Text('ID',style: TextStyle(color: Colors.white),
+                child: const Text('実験番号',style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -57,7 +65,7 @@ class _DataTableExampleState extends State<DataTableExample> {
               label: Container(
                 color: Colors.deepPurple,
                 width: 100,
-                child: const Text('Name',style: TextStyle(color: Colors.white),
+                child: const Text('ファイル名',style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -65,7 +73,7 @@ class _DataTableExampleState extends State<DataTableExample> {
               label: Container(
                 color: Colors.deepPurple,
                 width: 100,
-                child: const Text('Age',style: TextStyle(color: Colors.white),
+                child: const Text('実験条件',style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -83,9 +91,9 @@ class _DataTableExampleState extends State<DataTableExample> {
                 });
               },
               cells: [
-                DataCell(Text(item['id'].toString())),
-                DataCell(Text(item['name'].toString())),
-                DataCell(Text(item['age'].toString())),
+                DataCell(Text(item['OrderID'].toString())),
+                DataCell(Text(item['file_name_csv'].toString())),
+                DataCell(Text(item['Message'].toString())),
               ],
             );
           }).toList(),

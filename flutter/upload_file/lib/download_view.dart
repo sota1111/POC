@@ -7,7 +7,7 @@ import 'config.dart';
 class FileDownloaderScreen extends StatefulWidget {
   final DateTime? selectedDate;
 
-  const FileDownloaderScreen({Key? key, this.selectedDate}) : super(key: key);
+  const FileDownloaderScreen(this.selectedDate, {Key? key}) : super(key: key);
 
   @override
   _FileDownloaderScreenState createState() => _FileDownloaderScreenState();
@@ -18,9 +18,6 @@ class _FileDownloaderScreenState extends State<FileDownloaderScreen> {
   Image? _image;
 
   void _downloadFile() async {
-    // selectedDate を使う場合は、以下のようにアクセスします。
-    // DateTime? selectedDate = widget.selectedDate;
-
     try {
       String apiUrl = '$baseUri/download_plot';
       final response = await http.get(Uri.parse(apiUrl));

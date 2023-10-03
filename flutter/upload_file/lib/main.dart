@@ -67,10 +67,10 @@ class _PlotDataState extends State<PlotDataPage> {
             child: Column(
               children: [
                 FutureBuilder<List<Map<String, dynamic>>>(
-                  future: fetchDataFromLambda(),
+                  future: fetchDataFromLambda(selectedDate),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
@@ -89,7 +89,7 @@ class _PlotDataState extends State<PlotDataPage> {
           ),
           Expanded(
             flex: 3, // 3 parts of available space
-            child: FileDownloaderScreen(selectedDate: selectedDate),
+            child: FileDownloaderScreen(selectedDate),
           ),
         ],
       )

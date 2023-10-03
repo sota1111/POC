@@ -113,7 +113,7 @@ Resources:
           Type: Api
           Properties:
             Path: /data_list
-            Method: get
+            Method: post
             RestApiId: 
               Ref: ApiGatewayApi
 

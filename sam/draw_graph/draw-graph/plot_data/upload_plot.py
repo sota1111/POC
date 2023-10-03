@@ -7,7 +7,8 @@ from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 import pandas as pd
 import matplotlib.pyplot as plt
-import os  # osライブラリを追加
+import os
+
 # ロギングの設定
 import logging
 logger = logging.getLogger()
