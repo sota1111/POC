@@ -60,11 +60,17 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   // Perform the actual file upload
   Future<http.Response> _performFileUpload(String base64FileData) {
     String apiUrl = '$baseUri/upload_plot';
+    String year = '2023';
+    String formattedDate = '$year-$_selectedMonth-$_selectedDay';
+    //print(formattedDate);
     return http.post(
       Uri.parse(apiUrl),
       body: jsonEncode({
         'file_name': _selectedFileName,
         'file_data': base64FileData,
+        'experiment_date': formattedDate,
+        'experiment_number': _selectedNumber,
+        'message': _textEditingController.text,
       }),
       headers: {"Content-Type": "application/json"},
     );
@@ -84,7 +90,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
     if (response.statusCode == 200) {
       debugPrint("File uploaded successfully");
     } else {
-      debugPrint("Failed to upload file");
+      debugPrint(_uploadResponse);
     }
   }
 
