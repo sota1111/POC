@@ -67,7 +67,6 @@ class _PlotDataState extends State<PlotDataPage> {
       ),
       body: Row(
         children: [
-          // 最初の列（FileUploaderScreen）を占有可能なスペースの30%で表示
           const Expanded(
             flex: 3, // 3 parts of available space
             child: FileUploaderScreen(),
@@ -76,7 +75,6 @@ class _PlotDataState extends State<PlotDataPage> {
             color: Colors.grey,
             thickness: 1.0,
           ),
-          // 第二の列（DataTableExample）を占有可能なスペースの40%で表示
           Expanded(
             flex: 4, // 4 parts of available space
             child: Column(
@@ -90,7 +88,7 @@ class _PlotDataState extends State<PlotDataPage> {
                       return Text('Error: ${snapshot.error}');
                     } else {
                       return Expanded(
-                        child: DataTableExample(data: snapshot.data!),
+                        child: DataTablePage(data: snapshot.data!, formattedDate: formattedDate ?? '2023-10-1'),
                       );
                     }
                   },
