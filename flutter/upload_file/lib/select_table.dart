@@ -48,6 +48,7 @@ class _DataTableExampleState extends State<DataTableExample> {
             DataColumn(
               label: Container(
                 color: Colors.deepPurple,
+                width: 100,
                 child: const Text('ID',style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -55,6 +56,7 @@ class _DataTableExampleState extends State<DataTableExample> {
             DataColumn(
               label: Container(
                 color: Colors.deepPurple,
+                width: 100,
                 child: const Text('Name',style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -62,6 +64,7 @@ class _DataTableExampleState extends State<DataTableExample> {
             DataColumn(
               label: Container(
                 color: Colors.deepPurple,
+                width: 100,
                 child: const Text('Age',style: TextStyle(color: Colors.white),
                 ),
               ),

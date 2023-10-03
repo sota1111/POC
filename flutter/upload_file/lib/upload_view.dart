@@ -21,6 +21,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   int? _selectedMonth;
   int? _selectedDay;
   int? _selectedNumber;
+  final TextEditingController _textEditingController = TextEditingController();
 
 
   // Pick a CSV file
@@ -117,7 +118,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("月日と番号、ファイルを選択して、送信ボタンを押してください。"),
+            const Text("実験日と番号、ファイルを選択して、送信ボタンを押してください。"),
             const SizedBox(height: 30),
 
             Row(
@@ -180,7 +181,18 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
             const SizedBox(height: 10),
             Text("Selected File: $_selectedFileName"),
             const SizedBox(height: 30),
-
+            TextField(
+              controller: _textEditingController,
+              decoration: const InputDecoration(
+                hintText: '実験条件を記入してください',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 4,
+              style: const TextStyle(
+                fontSize: 18.0,
+              ),
+            ),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _sendFileToServer,
               child: const Text("送信"),
@@ -191,7 +203,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
 
             ElevatedButton(
               onPressed: _fetchServerData,
-              child: const Text("動作テスト"),
+              child: const Text("hello world"),
             ),
             const SizedBox(height: 10),
             Text("Response: $_serverResponse"),

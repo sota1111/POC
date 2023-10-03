@@ -52,32 +52,48 @@ class _PlotDataState extends State<PlotDataPage> {
       ),
       body: Row(
         children: [
-          Expanded(
+          // 最初の列（FileUploaderScreen）を占有可能なスペースの30%で表示
+          const Expanded(
+            flex: 3, // 3 parts of available space
             child: FileUploaderScreen(),
           ),
-          Column(
-            children: [
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future: fetchDataFromLambda(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return Expanded(
-                      child: DataTableExample(data: snapshot.data!),
-                    );
-                  }
-                },
-              ),
-            ],
+          VerticalDivider(
+            color: Colors.grey,
+            thickness: 1.0,
+          ),
+          // 第二の列（DataTableExample）を占有可能なスペースの40%で表示
+          Expanded(
+            flex: 4, // 4 parts of available space
+            child: Column(
+              children: [
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchDataFromLambda(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return Expanded(
+                        child: DataTableExample(data: snapshot.data!),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          VerticalDivider(
+            color: Colors.grey,
+            thickness: 1.0,
           ),
           Expanded(
+            flex: 3, // 3 parts of available space
             child: FileDownloaderScreen(selectedDate: selectedDate),
           ),
         ],
-      ),
+      )
+
     );
   }
 }
