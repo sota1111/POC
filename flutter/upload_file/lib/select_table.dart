@@ -1,30 +1,5 @@
-import 'dart:typed_data';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'config.dart';
-
-
-Future<List<Map<String, dynamic>>> fetchDataFromLambda(selectedDate) async {
-  String apiUrl = '$baseUri/data_list';
-  final response = await http.post(
-    Uri.parse(apiUrl),
-    body: jsonEncode({
-      'experiment_date': selectedDate,
-    }),
-    headers: {"Content-Type": "application/json"},
-  );
-
-  if (response.statusCode == 200) {
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
-    List<dynamic> data = responseBody['data'];
-    print(data);
-    return data.map((dynamic item) => item as Map<String, dynamic>).toList();
-  } else {
-    throw Exception('Failed to load data');
-  }
-}
-
+import 'api_service.dart';
 
 class DataTablePage extends StatefulWidget {
   final List<Map<String, dynamic>> data;
@@ -49,39 +24,6 @@ class _DataTablePageState extends State<DataTablePage> {
     selectedRows = List<bool>.generate(widget.data.length, (index) => false);
   }
 
-  Future<void> _overwriteMessage(String base64FileData) async {
-    String apiUrl = '$baseUri/upload_plot';
-
-    try {
-      final response = await http.put(
-        Uri.parse(apiUrl),
-        body: jsonEncode({
-          'date': widget.formattedDate,
-          'OrderID': _textEditingController.text,
-          'message': _textEditingController.text,
-        }),
-        headers: {"Content-Type": "application/json"},
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          String serverResponse = json.decode(response.body)['message'];
-          debugPrint(serverResponse);
-        });
-      } else {
-        setState(() {
-          String serverResponse = 'Failed to get data';
-          debugPrint(serverResponse);
-        });
-      }
-    } catch (e) {
-      setState(() {
-        String serverResponse = 'Exception occurred: $e';
-        debugPrint(serverResponse);
-      });
-    }
-  }
-
   void printSelectedRows() async {
     int selectedRowCount = 0;
 
@@ -92,7 +34,6 @@ class _DataTablePageState extends State<DataTablePage> {
       }
     }
 
-    // Show a message box if two or more rows are selected.
     if (selectedRowCount == 0) {
       showDialog(
         context: context,
@@ -167,32 +108,6 @@ class _DataTablePageState extends State<DataTablePage> {
       print("選択された行: $selectedRow");
 
       //await _overwriteMessage(_textEditingController.text);
-    }
-  }
-
-  void _downloadFile() async {
-    try {
-      String apiUrl = '$baseUri/download_plot';
-      final response = await http.get(Uri.parse(apiUrl));
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        final String base64Str = data['data'];
-        final Uint8List bytes = base64Decode(base64Str);
-
-        setState(() {
-          _downloadMessage = "File Downloaded Successfully";
-          _image = Image.memory(bytes);
-        });
-      } else {
-        setState(() {
-          _downloadMessage = 'Failed to download file';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _downloadMessage = 'Exception occurred: $e';
-      });
     }
   }
 
@@ -348,7 +263,9 @@ class _DataTablePageState extends State<DataTablePage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                 ),
-                onPressed: _downloadFile,
+                onPressed: () async{
+                  await overwriteMessage(_textEditingController.text, widget.formattedDate, _textEditingController.text);
+                },
                 child: const Text("Download File"),
               ),
               const SizedBox(height: 10),
