@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
-import 'select_table.dart';
 import 'config.dart';
 
 class FileUploaderScreen extends StatefulWidget {
