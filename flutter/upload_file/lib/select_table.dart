@@ -24,7 +24,7 @@ class _DataTablePageState extends State<DataTablePage> {
     selectedRows = List<bool>.generate(widget.data.length, (index) => false);
   }
 
-  void printSelectedRows() async {
+  Future<bool> confirmSelectedRows() async {
     int selectedRowCount = 0;
 
     for (int i = 0; i < selectedRows.length; i++) {
@@ -52,7 +52,7 @@ class _DataTablePageState extends State<DataTablePage> {
           );
         },
       );
-      return; // Exit the function.
+      return false;
     }
     else if (selectedRowCount >= 2) {
       showDialog(
@@ -72,9 +72,12 @@ class _DataTablePageState extends State<DataTablePage> {
           );
         },
       );
-      return; // Exit the function.
+      return false; // Exit the function.
     }
+    return true;
+  }
 
+  void sendModifyMessage() async {
     final result = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -221,8 +224,11 @@ class _DataTablePageState extends State<DataTablePage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                     ),
-                    onPressed: () {
-                      printSelectedRows();
+                    onPressed: () async{
+                      bool result = await confirmSelectedRows();
+                      if (result) {
+                        sendModifyMessage();
+                      }
                     },
                     child: const Text('実験条件を編集'),
                   ),
@@ -230,8 +236,10 @@ class _DataTablePageState extends State<DataTablePage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                     ),
-                    onPressed: () {
-                      printSelectedRows();
+                    onPressed: () async {
+                      bool result = await confirmSelectedRows();
+                      if (result) {
+                      }
                     },
                     child: const Text('実験結果をDL'),
                   ),
@@ -239,8 +247,11 @@ class _DataTablePageState extends State<DataTablePage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                     ),
-                    onPressed: () {
-                      printSelectedRows();
+                    onPressed: () async{
+                      bool result = await confirmSelectedRows();
+                      if (result) {
+                        downloadFile(widget.formattedDate, selectedRow);
+                      }
                     },
                     child: const Text('実験結果を確認'),
                   ),
@@ -259,18 +270,7 @@ class _DataTablePageState extends State<DataTablePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                ),
-                onPressed: () async{
-                  await overwriteMessage(_textEditingController.text, widget.formattedDate, _textEditingController.text);
-                },
-                child: const Text("Download File"),
-              ),
-              const SizedBox(height: 10),
-              Text(_downloadMessage),
-              const SizedBox(height: 10),
+              const Text('実験結果'),
               if (_image != null) _image!,
             ],
           ),
