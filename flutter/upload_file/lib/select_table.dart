@@ -156,64 +156,95 @@ class _DataTablePageState extends State<DataTablePage> {
           child: Text("Date: ${widget.formattedDate}", style: TextStyle(fontSize: 20)),
         ),
         Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                  return Colors.deepPurple;
-                }),
-                columns: [
-                  DataColumn(
-                    label: Container(
-                      color: Colors.deepPurple,
-                      width: 100,
-                      child: const Text('実験番号',style: TextStyle(color: Colors.white),
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                      return Colors.deepPurple;
+                    }),
+                    columns: [
+                      DataColumn(
+                        label: Container(
+                          color: Colors.deepPurple,
+                          width: 35,
+                          child: const Text('番号',style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Container(
-                      color: Colors.deepPurple,
-                      width: 100,
-                      child: const Text('ファイル名',style: TextStyle(color: Colors.white),
+                      DataColumn(
+                        label: Container(
+                          color: Colors.deepPurple,
+                          width: 100,
+                          child: const Text('実験条件',style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Container(
-                      color: Colors.deepPurple,
-                      width: 100,
-                      child: const Text('実験条件',style: TextStyle(color: Colors.white),
+                      DataColumn(
+                        label: Container(
+                          color: Colors.deepPurple,
+                          width: 100,
+                          child: const Text('RAMデータ',style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-                rows: widget.data.asMap().entries.map((entry) {
-                  int index = entry.key;
-                  Map<String, dynamic> item = entry.value;
-                  return DataRow(
-                    selected: selectedRows[index],
-                    onSelectChanged: (bool? value) {
-                      setState(() {
-                        if (value != null) {
-                          selectedRows[index] = value;
-                        }
-                      });
-                    },
-                    cells: [
-                      DataCell(Text(item['OrderID'].toString())),
-                      DataCell(Text(item['file_name_csv'].toString())),
-                      DataCell(Text(item['Message'].toString())),
                     ],
-                  );
-                }).toList(),
+                    rows: widget.data.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      Map<String, dynamic> item = entry.value;
+                      return DataRow(
+                        selected: selectedRows[index],
+                        onSelectChanged: (bool? value) {
+                          setState(() {
+                            if (value != null) {
+                              selectedRows[index] = value;
+                            }
+                          });
+                        },
+                        cells: [
+                          DataCell(Text(item['OrderID'].toString())),
+                          DataCell(Text(item['Message'].toString())),
+                          DataCell(Text(item['file_name_csv'].toString())),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  width: 1.0,
+                  color: Colors.black,
+                ),
+              ),
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  width: 1.0,
+                  color: Colors.black,
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  height: 1.0,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 30),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
