@@ -159,7 +159,7 @@ class _DataTablePageState extends State<DataTablePage> {
                               label: Container(
                                 color: Colors.deepPurple,
                                 width: 100,
-                                child: const Text('RAMデータ',style: TextStyle(color: Colors.white),
+                                child: const Text('Log File',style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             ),
@@ -241,7 +241,7 @@ class _DataTablePageState extends State<DataTablePage> {
                       if (result) {
                       }
                     },
-                    child: const Text('実験結果をDL'),
+                    child: const Text('実験データをDL'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
