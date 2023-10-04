@@ -54,6 +54,8 @@ class _PlotDataState extends State<PlotDataPage> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("実験結果まとめ"),
@@ -67,10 +69,12 @@ class _PlotDataState extends State<PlotDataPage> {
           ),
         ],
       ),
-      body: Row(
+      body: width > 600
+          ? // For tablets and larger screens
+      Row(
         children: [
           const Expanded(
-            flex: 3, // 3 parts of available space
+            flex: 3,
             child: FileUploaderScreen(),
           ),
           const VerticalDivider(
@@ -78,25 +82,8 @@ class _PlotDataState extends State<PlotDataPage> {
             thickness: 1.0,
           ),
           Expanded(
-            flex: 7, // 4 parts of available space
-            child: Column(
-              children: [
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: fetchDataFromLambda(formattedDate),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      return Expanded(
-                        child: DataTablePage(data: snapshot.data!, formattedDate: formattedDate ?? '2023-10-1'),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
+            flex: 7,
+            child: _buildDataColumn(),
           ),
           const VerticalDivider(
             color: Colors.grey,
@@ -104,7 +91,30 @@ class _PlotDataState extends State<PlotDataPage> {
           ),
         ],
       )
+          : // For phones
+      _buildDataColumn(),
+    );
+  }
 
+  Widget _buildDataColumn() {
+    return Column(
+      children: [
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: fetchDataFromLambda(formattedDate),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return Expanded(
+                child: DataTablePage(
+                    data: snapshot.data!, formattedDate: formattedDate ?? '2023-10-1'),
+              );
+            }
+          },
+        ),
+      ],
     );
   }
 }
