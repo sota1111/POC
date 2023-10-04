@@ -21,6 +21,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   int? _selectedMonth;
   int? _selectedDay;
   int? _selectedNumber;
+  String _fileType = "";
   final TextEditingController _textEditingController = TextEditingController();
 
 
@@ -28,13 +29,44 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   void _pickCsvFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['csv'],
+      allowedExtensions: ['jpg', 'png'],
     );
 
     if (result != null) {
       setState(() {
         _selectedFileBytes = result.files.first.bytes;
         _selectedFileName = result.files.first.name;
+        _fileType = "log";
+      });
+    }
+  }
+
+  void _pickTrajectoryFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png'],
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFileBytes = result.files.first.bytes;
+        _selectedFileName = result.files.first.name;
+        _fileType = "trajectory";
+      });
+    }
+  }
+
+  void _pickContinuousPictureFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png'],
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFileBytes = result.files.first.bytes;
+        _selectedFileName = result.files.first.name;
+        _fileType = "continuous";
       });
     }
   }
@@ -181,20 +213,45 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
               ],
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _pickCsvFile,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-              ),
-              child: const Text("ファイル選択"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: _pickCsvFile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text("CsvFile選択"),
+                ),
+                ElevatedButton(
+                  onPressed: _pickTrajectoryFile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text("軌道写真選択"),
+                ),
+                ElevatedButton(
+                  onPressed: _pickContinuousPictureFile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text("連続写真選択"),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
-            Text("Selected File: $_selectedFileName"),
+            Row(
+              children: [
+                const SizedBox(width: 10),
+                Text("Selected File: $_selectedFileName"),
+              ],
+            ),
             const SizedBox(height: 30),
+
             TextField(
               controller: _textEditingController,
               decoration: const InputDecoration(
-                hintText: '実験条件を記入してください',
+                hintText: '実験条件を記入してください。\nここに記入した場合、\n既存の実験条件は上書きされます。',
                 border: OutlineInputBorder(),
               ),
               maxLines: 4,
@@ -203,6 +260,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
               ),
             ),
             const SizedBox(height: 30),
+
             ElevatedButton(
               onPressed: _sendFileToServer,
               style: ElevatedButton.styleFrom(
