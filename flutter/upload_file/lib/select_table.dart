@@ -89,7 +89,27 @@ class _DataTablePageState extends State<DataTablePage> {
     }
 
     // Show a message box if two or more rows are selected.
-    if (selectedRowCount >= 2) {
+    if (selectedRowCount == 0) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("警告"),
+            content: Text("データが選択されていません。"),
+            actions: [
+              ElevatedButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return; // Exit the function.
+    }
+    else if (selectedRowCount >= 2) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
