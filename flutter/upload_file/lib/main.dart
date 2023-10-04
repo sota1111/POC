@@ -78,7 +78,7 @@ class _PlotDataState extends State<PlotDataPage> {
             thickness: 1.0,
           ),
           Expanded(
-            flex: 4, // 4 parts of available space
+            flex: 7, // 4 parts of available space
             child: Column(
               children: [
                 FutureBuilder<List<Map<String, dynamic>>>(
@@ -101,10 +101,6 @@ class _PlotDataState extends State<PlotDataPage> {
           const VerticalDivider(
             color: Colors.grey,
             thickness: 1.0,
-          ),
-          Expanded(
-            flex: 3, // 3 parts of available space
-            child: FileDownloaderScreen(formattedDate),
           ),
         ],
       )

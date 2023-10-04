@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'config.dart';
+
 
 Future<List<Map<String, dynamic>>> fetchDataFromLambda(selectedDate) async {
   String apiUrl = '$baseUri/data_list';
@@ -38,6 +40,8 @@ class _DataTablePageState extends State<DataTablePage> {
   late String selectedRow = "";
   List<bool> selectedRows = [];
   final TextEditingController _textEditingController = TextEditingController();
+  String _downloadMessage = "No File Downloaded";
+  Image? _image;
 
   @override
   void initState() {
@@ -166,138 +170,194 @@ class _DataTablePageState extends State<DataTablePage> {
     }
   }
 
+  void _downloadFile() async {
+    try {
+      String apiUrl = '$baseUri/download_plot';
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final String base64Str = data['data'];
+        final Uint8List bytes = base64Decode(base64Str);
+
+        setState(() {
+          _downloadMessage = "File Downloaded Successfully";
+          _image = Image.memory(bytes);
+        });
+      } else {
+        setState(() {
+          _downloadMessage = 'Failed to download file';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _downloadMessage = 'Exception occurred: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text("Date: ${widget.formattedDate}", style: TextStyle(fontSize: 20)),
-        ),
         Expanded(
-          child: Stack(
+          flex: 5,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                      return Colors.deepPurple;
-                    }),
-                    columns: [
-                      DataColumn(
-                        label: Container(
-                          color: Colors.deepPurple,
-                          width: 35,
-                          child: const Text('番号',style: TextStyle(color: Colors.white),
-                          ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Date: ${widget.formattedDate}", style: TextStyle(fontSize: 20)),
+              ),
+              Expanded(
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                            return Colors.deepPurple;
+                          }),
+                          columns: [
+                            DataColumn(
+                              label: Container(
+                                color: Colors.deepPurple,
+                                width: 35,
+                                child: const Text('番号',style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Container(
+                                color: Colors.deepPurple,
+                                width: 100,
+                                child: const Text('実験条件',style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Container(
+                                color: Colors.deepPurple,
+                                width: 100,
+                                child: const Text('RAMデータ',style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                          rows: widget.data.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            Map<String, dynamic> item = entry.value;
+                            return DataRow(
+                              selected: selectedRows[index],
+                              onSelectChanged: (bool? value) {
+                                setState(() {
+                                  if (value != null) {
+                                    selectedRows[index] = value;
+                                  }
+                                });
+                              },
+                              cells: [
+                                DataCell(Text(item['OrderID'].toString())),
+                                DataCell(Text(item['Message'].toString())),
+                                DataCell(Text(item['file_name_csv'].toString())),
+                              ],
+                            );
+                          }).toList(),
                         ),
                       ),
-                      DataColumn(
-                        label: Container(
-                          color: Colors.deepPurple,
-                          width: 100,
-                          child: const Text('実験条件',style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        width: 1.0,
+                        color: Colors.black,
                       ),
-                      DataColumn(
-                        label: Container(
-                          color: Colors.deepPurple,
-                          width: 100,
-                          child: const Text('RAMデータ',style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 1.0,
+                        color: Colors.black,
                       ),
-                    ],
-                    rows: widget.data.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      Map<String, dynamic> item = entry.value;
-                      return DataRow(
-                        selected: selectedRows[index],
-                        onSelectChanged: (bool? value) {
-                          setState(() {
-                            if (value != null) {
-                              selectedRows[index] = value;
-                            }
-                          });
-                        },
-                        cells: [
-                          DataCell(Text(item['OrderID'].toString())),
-                          DataCell(Text(item['Message'].toString())),
-                          DataCell(Text(item['file_name_csv'].toString())),
-                        ],
-                      );
-                    }).toList(),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        height: 1.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                    ),
+                    onPressed: () {
+                      printSelectedRows();
+                    },
+                    child: const Text('実験条件を編集'),
                   ),
-                ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                    ),
+                    onPressed: () {
+                      printSelectedRows();
+                    },
+                    child: const Text('実験結果をDL'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                    ),
+                    onPressed: () {
+                      printSelectedRows();
+                    },
+                    child: const Text('実験結果を確認'),
+                  ),
+                ],
               ),
-              Positioned(
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: Container(
-                  width: 1.0,
-                  color: Colors.black,
-                ),
-              ),
-              Positioned(
-                top: 0,
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: 1.0,
-                  color: Colors.black,
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  height: 1.0,
-                  color: Colors.black,
-                ),
-              ),
+              const SizedBox(height: 30),
             ],
           ),
         ),
-        const SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-              ),
-              onPressed: () {
-                printSelectedRows();
-              },
-              child: const Text('実験条件を編集'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-              ),
-              onPressed: () {
-                printSelectedRows();
-              },
-              child: const Text('実験結果をDL'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-              ),
-              onPressed: () {
-                printSelectedRows();
-              },
-              child: const Text('実験結果を確認'),
-            ),
-          ],
+        const VerticalDivider(
+          color: Colors.grey,
+          thickness: 1.0,
         ),
-        const SizedBox(height: 30),
+        Expanded(
+          flex: 5, // 4 parts of available space
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                ),
+                onPressed: _downloadFile,
+                child: const Text("Download File"),
+              ),
+              const SizedBox(height: 10),
+              Text(_downloadMessage),
+              const SizedBox(height: 10),
+              if (_image != null) _image!,
+            ],
+          ),
+        ),
       ],
     );
   }
