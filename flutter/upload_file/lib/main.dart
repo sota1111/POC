@@ -57,6 +57,7 @@ class _PlotDataState extends State<PlotDataPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("実験結果まとめ"),
+        backgroundColor: Colors.black,
         actions: [
           IconButton(
             icon: Icon(Icons.calendar_today),

@@ -218,18 +218,27 @@ class _DataTablePageState extends State<DataTablePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+              ),
               onPressed: () {
                 printSelectedRows();
               },
               child: const Text('実験条件を編集'),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+              ),
               onPressed: () {
                 printSelectedRows();
               },
               child: const Text('実験結果をDL'),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+              ),
               onPressed: () {
                 printSelectedRows();
               },

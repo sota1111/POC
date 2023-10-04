@@ -50,6 +50,9 @@ class _FileDownloaderScreenState extends State<FileDownloaderScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+            ),
             onPressed: _downloadFile,
             child: const Text("Download File"),
           ),

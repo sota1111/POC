@@ -129,6 +129,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
 
             Row(
               children: [
+                const Text("実験日:　"),
                 DropdownButton<int>(
                   hint: Text('月'),
                   value: _selectedMonth,
@@ -161,7 +162,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
                     });
                   },
                 ),
-                Text("番号："),
+                Text("実験番号："),
                 DropdownButton<int>(
                   hint: Text('number'),
                   value: _selectedNumber,
@@ -182,6 +183,9 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _pickCsvFile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+              ),
               child: const Text("ファイル選択"),
             ),
             const SizedBox(height: 10),
@@ -201,6 +205,9 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _sendFileToServer,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+              ),
               child: const Text("送信"),
             ),
             const SizedBox(height: 10),
@@ -209,6 +216,9 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
 
             ElevatedButton(
               onPressed: _fetchServerData,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+              ),
               child: const Text("hello world"),
             ),
             const SizedBox(height: 10),
