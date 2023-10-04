@@ -56,6 +56,7 @@ class _PlotDataState extends State<PlotDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text("実験結果まとめ"),
         actions: [
           IconButton(
             icon: Icon(Icons.calendar_today),
