@@ -131,7 +131,7 @@ Resources:
           Type: Api
           Properties:
             Path: /download_plot
-            Method: get
+            Method: post
             RestApiId: 
               Ref: ApiGatewayApi
   

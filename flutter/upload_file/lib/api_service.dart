@@ -49,6 +49,7 @@ Future<void> overwriteMessage(String base64FileData, String formattedDate, Strin
 }
 
 Future<Map<String, dynamic>> downloadFile(formattedDate, selectedRow) async {
+  print("downloadFile");
   String apiUrl = '$baseUri/download_plot';
   final response = await http.post(
     Uri.parse(apiUrl),
@@ -63,11 +64,14 @@ Future<Map<String, dynamic>> downloadFile(formattedDate, selectedRow) async {
     final Map<String, dynamic> data = jsonDecode(response.body);
     final String base64Str = data['data'];
     final Uint8List bytes = base64Decode(base64Str);
+    String serverResponse = json.decode(response.body)['message'];
+    print(serverResponse);
     return {
       'message': 'File Downloaded Successfully',
       'image': bytes,
     };
   } else {
+    print('Failed to get data');
     throw Exception('Failed to download file');
   }
 }

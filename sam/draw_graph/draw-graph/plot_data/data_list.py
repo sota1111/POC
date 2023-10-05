@@ -61,6 +61,7 @@ def lambda_handler(event, context):
             }, default=decimal_to_str),
         }
     except Exception as e:
+        print(f"Exception: {str(e)}")
         return {
             "statusCode": 500,
             "headers": {

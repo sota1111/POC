@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'api_service.dart';
 
 class DataTablePage extends StatefulWidget {
@@ -16,7 +17,8 @@ class _DataTablePageState extends State<DataTablePage> {
   List<bool> selectedRows = [];
   final TextEditingController _textEditingController = TextEditingController();
   String _downloadMessage = "No File Downloaded";
-  Image? _image;
+  Uint8List? _image;
+
 
   @override
   void initState() {
@@ -271,7 +273,14 @@ class _DataTablePageState extends State<DataTablePage> {
                 onPressed: () async{
                   bool result = await confirmSelectedRows();
                   if (result) {
-                    downloadFile(widget.formattedDate, selectedRow);
+                    Map<String, dynamic> result = await downloadFile(widget.formattedDate, selectedRow);
+                    _image = result['image'];
+                    if (_image != null) {
+                      setState(() { // Make sure to update the state
+                        _image =
+                        result['image'] as Uint8List?; // Cast it to Uint8List
+                      });
+                    }
                   }
                 },
                 child: const Text('実験結果を確認'),
@@ -291,7 +300,8 @@ class _DataTablePageState extends State<DataTablePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text('実験結果'),
-          if (_image != null) _image!,
+          if (_image != null)
+            Image.memory(_image!)
         ],
       ),
     );

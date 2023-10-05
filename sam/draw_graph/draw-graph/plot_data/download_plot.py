@@ -3,10 +3,18 @@ import boto3
 import base64
 
 def lambda_handler(event, context):
+    print(f"call download_plot")
     try:
+        # データをJSONとしてパース
+        body = json.loads(event['body'])
+        experiment_date = body.get('experiment_date', '2023-10-3')
+        print(f"experiment_date:{experiment_date}")
+        experiment_number = body.get('experiment_number', '0')
+        print(f"experiment_number:{experiment_number}")
+
         s3 = boto3.client('s3')
         bucket_name = 'log-robot-data'  # バケット名を指定
-        file_key = 'sample.png'  # ファイル名（キー）を指定
+        file_key = 'sin_wave.png'  # ファイル名（キー）を指定
         
         # S3からファイルをダウンロード
         s3_response_object = s3.get_object(Bucket=bucket_name, Key=file_key)
@@ -29,6 +37,7 @@ def lambda_handler(event, context):
             }),
         }
     except Exception as e:
+        print(f"Exception: {str(e)}")
         return {
             "statusCode": 500,
             "headers": {
