@@ -19,22 +19,23 @@ class _DataTablePageState extends State<DataTablePage> {
   final TextEditingController _textEditingController = TextEditingController();
   String _downloadMessage = "No File Downloaded";
   Uint8List? _image;
+  late List<Map<String, dynamic>> currentData;
 
 
   @override
   void initState() {
     super.initState();
+    currentData = widget.data;
     selectedRows = List<bool>.generate(widget.data.length, (index) => false);
   }
 
   Future<bool> confirmSelectedRows() async {
     int selectedRowCount = 0;
+    //selectedRowsOrderID.clear();
 
     for (int i = 0; i < selectedRows.length; i++) {
       if (selectedRows[i]) {
         selectedRowCount++;
-        selectedRow = selectedRowsOrderID[i];
-        //print(selectedRow);
       }
     }
 
@@ -77,6 +78,8 @@ class _DataTablePageState extends State<DataTablePage> {
         },
       );
       return false; // Exit the function.
+    }else{
+      selectedRow = selectedRowsOrderID[0];
     }
     return true;
   }
@@ -148,9 +151,31 @@ class _DataTablePageState extends State<DataTablePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text("Date: ${widget.formattedDate}", style: TextStyle(fontSize: 20)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  backgroundColor: Colors.green.shade700,
+                ),
+                onPressed: () async {
+                  // selectedDate は選択された日付に基づいて更新されるべき変数です
+                  List<Map<String, dynamic>> newData = await fetchDataFromLambda(widget.formattedDate);
+                  setState(() {
+                    currentData = newData;
+                    print(currentData);
+                    selectedRows = List<bool>.generate(currentData.length, (index) => false);
+                  });
+                },
+                child: const Icon(Icons.refresh_outlined),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Date: ${widget.formattedDate}", style: TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(width: 30),
+            ],
           ),
           Expanded(
             child: Stack(
@@ -189,7 +214,7 @@ class _DataTablePageState extends State<DataTablePage> {
                           ),
                         ),
                       ],
-                      rows: widget.data.asMap().entries.map((entry) {
+                      rows: currentData.asMap().entries.map((entry) {
                         int index = entry.key;
                         Map<String, dynamic> item = entry.value;
                         return DataRow(
