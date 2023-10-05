@@ -1,3 +1,5 @@
 TABLE_NAME = 'experiment'
 INDEX_NAME = 'Date-index'
 INDEX_KEY_NAME1 = 'Date'
+PARTITION_KEY_NAME = 'Date'
+SORT_KEY_NAME = 'OrderID'

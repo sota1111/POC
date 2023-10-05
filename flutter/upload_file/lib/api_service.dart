@@ -42,16 +42,17 @@ Future<http.Response> performFileUpload(String base64FileData, String? selectedF
   );
 }
 
-Future<void> overwriteMessage(String base64FileData, String formattedDate, String textEditingControllerText) async {
-  String apiUrl = '$baseUri/upload_plot';
+Future<void> overwriteMessage(String formattedDate, String selectedNumber, String newMessage) async {
+  print("overwriteMessage");
+  String apiUrl = '$baseUri/data_list';
 
   try {
     final response = await http.put(
       Uri.parse(apiUrl),
       body: jsonEncode({
-        'date': formattedDate,
-        'OrderID': textEditingControllerText,
-        'message': textEditingControllerText,
+        'experiment_date': formattedDate,
+        'experiment_number': selectedNumber,
+        'message': newMessage,
       }),
       headers: {"Content-Type": "application/json"},
     );

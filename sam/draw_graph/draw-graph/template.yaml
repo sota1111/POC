@@ -109,11 +109,18 @@ Resources:
         - AmazonDynamoDBFullAccess
         - AmazonS3FullAccess
       Events:
-        DataList:
+        DataListPost:
           Type: Api
           Properties:
             Path: /data_list
             Method: post
+            RestApiId: 
+              Ref: ApiGatewayApi
+        DataListPut:
+          Type: Api
+          Properties:
+            Path: /data_list
+            Method: put
             RestApiId: 
               Ref: ApiGatewayApi
 
@@ -141,6 +148,6 @@ Resources:
     Properties:
       StageName: Prod
       Cors:
-        AllowMethods: "'GET,POST'"
+        AllowMethods: "'GET,POST,PUT,DELETE,HEAD,PATCH,OPTION'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
         AllowOrigin: "'*'"

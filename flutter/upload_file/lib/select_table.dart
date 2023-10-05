@@ -33,7 +33,6 @@ class _DataTablePageState extends State<DataTablePage> {
 
   Future<bool> confirmSelectedRows() async {
     int selectedRowCount = 0;
-    //selectedRowsOrderID.clear();
 
     for (int i = 0; i < selectedRows.length; i++) {
       if (selectedRows[i]) {
@@ -82,6 +81,7 @@ class _DataTablePageState extends State<DataTablePage> {
       return false; // Exit the function.
     }else{
       selectedRow = selectedRowsOrderID[0];
+      print(selectedRow);
     }
     return true;
   }
@@ -114,12 +114,7 @@ class _DataTablePageState extends State<DataTablePage> {
     );
 
     if (result != null && result.isNotEmpty) {
-      // ここでAPIを呼び出す処理を行う
-      // fetchDataFromLambda(result) など
-      print("入力されたテキスト: $result");
-      print("選択された行: $selectedRow");
-
-      //await _overwriteMessage(_textEditingController.text);
+      await overwriteMessage(widget.formattedDate, selectedRow, _textEditingController.text);
     }
   }
 
