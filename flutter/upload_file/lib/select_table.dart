@@ -365,11 +365,11 @@ class _DataTablePageState extends State<DataTablePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('実験結果'),
-            if (_imageLog != null)
+            if (_imageLog != null && _imageLog!.isNotEmpty)
               Image.memory(_imageLog!),
-            if (_imageTra != null)
+            if (_imageTra != null && _imageTra!.isNotEmpty)
               Image.memory(_imageTra!),
-            if (_imageCon != null)
+            if (_imageCon != null && _imageCon!.isNotEmpty)
               Image.memory(_imageCon!)
           ],
         ),

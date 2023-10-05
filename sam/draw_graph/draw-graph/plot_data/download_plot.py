@@ -14,20 +14,18 @@ def get_experiment_data_from_dynamodb(experiment_date, experiment_number):
     )
     return db_response.get('Item', {})
 
-# 既存の関数
 def fetch_s3_object(bucket_name, file_key):
     if not file_key:
         return None
+    print(f"Fetching from bucket: {bucket_name}, with key: {file_key}")  # デバッグ用に出力
     s3 = boto3.client('s3')
     return s3.get_object(Bucket=bucket_name, Key=file_key)['Body'].read()
 
-# 既存の関数
 def to_base64_encoded(content):
     if content is None:
         return None
     return base64.b64encode(content).decode('utf-8')
 
-# 既存の関数
 def get_content_type(file_path):
     if file_path is None:
         return None
@@ -43,26 +41,35 @@ def lambda_handler(event, context):
         
         # Fetch experiment data from DynamoDB
         item = get_experiment_data_from_dynamodb(experiment_date, experiment_number)
+        print(f"item: {item}")
         log_png = item.get('log_png', '')
         trajectory = item.get('trajectory', '')
         continuous = item.get('continuous', '')
-        
-        # Fetch files from S3
-        bucket_name = 'log-robot-data'
-        content_log = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{log_png}")
-        content_tra = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{trajectory}")
-        content_con = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{continuous}")
 
-        # Encode files to Base64
-        base64_encoded_log = to_base64_encoded(content_log)
-        base64_encoded_tra = to_base64_encoded(content_tra)
-        base64_encoded_con = to_base64_encoded(content_con)
-        
-        # Determine content types
-        content_type_tra = get_content_type(trajectory)
-        content_type_con = get_content_type(continuous)
-        
-        # Build response
+        bucket_name = 'log-robot-data'
+
+        if log_png:
+            content_log = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{log_png}")
+            base64_encoded_log = to_base64_encoded(content_log)
+        else:
+            base64_encoded_log = None
+
+        if trajectory:
+            content_tra = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{trajectory}")
+            base64_encoded_tra = to_base64_encoded(content_tra)
+            content_type_tra = get_content_type(trajectory)
+        else:
+            base64_encoded_tra = None
+            content_type_tra = "image/png"
+
+        if continuous:
+            content_con = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{continuous}")
+            base64_encoded_con = to_base64_encoded(content_con)
+            content_type_con = get_content_type(continuous)
+        else:
+            base64_encoded_con = None
+            content_type_con = "image/png"
+
         return {
             "statusCode": 200,
             "headers": {
@@ -80,6 +87,7 @@ def lambda_handler(event, context):
             }),
         }
     except Exception as e:
+        print(f"Exception: {str(e)}")
         return {
             "statusCode": 500,
             "headers": {
