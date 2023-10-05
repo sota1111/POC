@@ -81,13 +81,22 @@ Future<Map<String, dynamic>> downloadFile(formattedDate, selectedRow) async {
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = jsonDecode(response.body);
-    final String base64Str = data['data'];
-    final Uint8List bytes = base64Decode(base64Str);
+
+    final String base64StrLog = data['data_log'];
+    final String base64StrTra = data['data_trajectory'];
+    final String base64StrCon = data['data_continuous'];
+
+    final Uint8List bytesLog = base64Decode(base64StrLog);
+    final Uint8List bytesTra = base64Decode(base64StrTra);
+    final Uint8List bytesCon = base64Decode(base64StrCon);
+
     String serverResponse = json.decode(response.body)['message'];
     print(serverResponse);
     return {
       'message': 'File Downloaded Successfully',
-      'image': bytes,
+      'imageLog': bytesLog,
+      'imageTra': bytesTra,
+      'imageCon': bytesCon,
     };
   } else {
     print('Failed to get data');

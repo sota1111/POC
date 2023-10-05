@@ -1,2 +1,2 @@
 
-const String baseUri = 'https://wohqiu6l26.execute-api.ap-northeast-1.amazonaws.com/Prod';
+const String baseUri = 'https://qquk8iogs9.execute-api.ap-northeast-1.amazonaws.com/Prod';

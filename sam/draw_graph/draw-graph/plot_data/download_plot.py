@@ -14,14 +14,23 @@ def get_experiment_data_from_dynamodb(experiment_date, experiment_number):
     )
     return db_response.get('Item', {})
 
+# 既存の関数
 def fetch_s3_object(bucket_name, file_key):
+    if not file_key:
+        return None
     s3 = boto3.client('s3')
     return s3.get_object(Bucket=bucket_name, Key=file_key)['Body'].read()
 
+# 既存の関数
 def to_base64_encoded(content):
+    if content is None:
+        return None
     return base64.b64encode(content).decode('utf-8')
 
+# 既存の関数
 def get_content_type(file_path):
+    if file_path is None:
+        return None
     file_extension = os.path.splitext(file_path)[1][1:]
     return f"image/{file_extension}"
 

@@ -18,7 +18,9 @@ class _DataTablePageState extends State<DataTablePage> {
   List<String> selectedRowsOrderID = [];
   final TextEditingController _textEditingController = TextEditingController();
   String _downloadMessage = "No File Downloaded";
-  Uint8List? _image;
+  Uint8List? _imageLog;
+  Uint8List? _imageTra;
+  Uint8List? _imageCon;
   late List<Map<String, dynamic>> currentData;
 
 
@@ -325,11 +327,22 @@ class _DataTablePageState extends State<DataTablePage> {
                   bool result = await confirmSelectedRows();
                   if (result) {
                     Map<String, dynamic> result = await downloadFile(widget.formattedDate, selectedRow);
-                    _image = result['image'];
-                    if (_image != null) {
+                    _imageLog = result['imageLog'];
+                    _imageTra = result['imageTra'];
+                    _imageCon = result['imageCon'];
+                    if (_imageLog != null) {
                       setState(() { // Make sure to update the state
-                        _image =
-                        result['image'] as Uint8List?; // Cast it to Uint8List
+                        _imageLog = result['imageLog'] as Uint8List?;
+                      });
+                    }
+                    if (_imageTra != null) {
+                      setState(() { // Make sure to update the state
+                        _imageTra = result['imageTra'] as Uint8List?;
+                      });
+                    }
+                    if (_imageCon != null) {
+                      setState(() { // Make sure to update the state
+                        _imageCon = result['imageCon'] as Uint8List?;
                       });
                     }
                   }
@@ -347,14 +360,21 @@ class _DataTablePageState extends State<DataTablePage> {
   Widget _buildRightColumn() {
     return Expanded(
       flex: 5, // 4 parts of available space
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('実験結果'),
-          if (_image != null)
-            Image.memory(_image!)
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('実験結果'),
+            if (_imageLog != null)
+              Image.memory(_imageLog!),
+            if (_imageTra != null)
+              Image.memory(_imageTra!),
+            if (_imageCon != null)
+              Image.memory(_imageCon!)
+          ],
+        ),
       ),
     );
   }
+
 }
