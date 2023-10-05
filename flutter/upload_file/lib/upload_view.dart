@@ -29,7 +29,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   void _pickCsvFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'png'],
+      allowedExtensions: ['csv'],
     );
 
     if (result != null) {
