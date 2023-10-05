@@ -14,7 +14,8 @@ def lambda_handler(event, context):
 
         s3 = boto3.client('s3')
         bucket_name = 'log-robot-data'  # バケット名を指定
-        file_key = 'sin_wave.png'  # ファイル名（キー）を指定
+        # Construct the file key dynamically based on experiment_date and experiment_number
+        file_key = f"{experiment_date}/{experiment_number}/sin_wave.png"
         
         # S3からファイルをダウンロード
         s3_response_object = s3.get_object(Bucket=bucket_name, Key=file_key)

@@ -15,6 +15,7 @@ class DataTablePage extends StatefulWidget {
 class _DataTablePageState extends State<DataTablePage> {
   late String selectedRow = "";
   List<bool> selectedRows = [];
+  List<String> selectedRowsOrderID = [];
   final TextEditingController _textEditingController = TextEditingController();
   String _downloadMessage = "No File Downloaded";
   Uint8List? _image;
@@ -32,7 +33,8 @@ class _DataTablePageState extends State<DataTablePage> {
     for (int i = 0; i < selectedRows.length; i++) {
       if (selectedRows[i]) {
         selectedRowCount++;
-        selectedRow = i.toString();
+        selectedRow = selectedRowsOrderID[i];
+        //print(selectedRow);
       }
     }
 
@@ -196,6 +198,12 @@ class _DataTablePageState extends State<DataTablePage> {
                             setState(() {
                               if (value != null) {
                                 selectedRows[index] = value;
+                                // 選択された場合は OrderID を追加、選択解除された場合は OrderID を削除
+                                if (value) {
+                                  selectedRowsOrderID.add(item['OrderID'].toString());
+                                } else {
+                                  selectedRowsOrderID.remove(item['OrderID'].toString());
+                                }
                               }
                             });
                           },
