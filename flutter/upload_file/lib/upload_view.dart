@@ -85,7 +85,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
       _uploadResponse = "ファイルをupload中";
     });
     final base64FileData = base64Encode(_selectedFileBytes!);
-    final response = await performFileUpload(base64FileData, _selectedFileName, _selectedMonth, _selectedDay, _selectedNumber, _textEditingController.text);
+    final response = await performFileUpload(base64FileData, _selectedFileName, _selectedMonth, _selectedDay, _selectedNumber, _textEditingController.text, _fileType);
     _updateUploadStatus(response);
   }
 

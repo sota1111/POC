@@ -27,6 +27,7 @@ def plot_and_save(df, file_name):
     
     return png_file_name
 
+# itemを追加する
 def add_date_item(table, item):
     print("□ add_date_item")
     try:
@@ -57,6 +58,53 @@ def update_one_item(self, partition_key, sort_key, update_expression, expression
     except Exception as e:
         raise Exception(str(e))
     
+
+def put_or_update_item(table, item):
+    print("□ add_date_item")
+    try:
+        print(f"table:{table}")
+        
+        # パーティションキーとソートキーで検索
+        response = table.get_item(
+            Key={
+                'Date': item['Date'],
+                'OrderID': item['OrderID']
+            }
+        )
+        
+        # 既存のアイテムがあればupdate_itemを呼び出す
+        if 'Item' in response:
+            update_expression = "SET "
+            expression_attribute_values = {}
+            
+            for key, value in item.items():
+                if key not in ['Date', 'OrderID']:  # パーティションキーとソートキーは更新しない
+                    update_expression += f"{key} = :{key}, "
+                    expression_attribute_values[f":{key}"] = value
+            
+            update_expression = update_expression.rstrip(', ')
+            
+            table.update_item(
+                Key={
+                    'Date': item['Date'],
+                    'OrderID': item['OrderID']
+                },
+                UpdateExpression=update_expression,
+                ExpressionAttributeValues=expression_attribute_values
+            )
+            return f"Item with Date {item['Date']} and OrderID {item['OrderID']} has been updated."
+        
+        # 既存のアイテムがなければput_itemを呼び出す
+        else:
+            table.put_item(Item=item)
+            return f"Item with Date {item['Date']} and OrderID {item['OrderID']} has been added."
+
+    except ClientError as e:
+        raise ClientError(e.response["Error"]["Message"])
+    except Exception as e:
+        raise Exception(str(e))
+
+    
 def upload_to_s3_with_date(s3, file_data, bucket_name, file_name, date, number):
     s3_key = f"{date}/{number}/{file_name}"
     s3.put_object(Body=file_data, Bucket=bucket_name, Key=s3_key)
@@ -77,23 +125,24 @@ def lambda_handler(event, context):
         experiment_number = body.get('experiment_number', '0')
         print(f"experiment_number:{experiment_number}")
         message = body.get('message', 'hello')
+        file_type = body.get('file_type', '')
+        print(f"file_type:{file_type}")
         
-        _, file_extension = os.path.splitext(file_name)
-        if file_extension == '.csv':
-            file_name_csv = file_name
-            # S3クライアントを初期化
-            s3 = boto3.client('s3')
-            db = boto3.resource('dynamodb')
-            table = db.Table('experiment')
+        # S3クライアントを初期化
+        s3 = boto3.client('s3')
+        db = boto3.resource('dynamodb')
+        table = db.Table('experiment')
+        bucket_name = 'log-robot-data'  # バケット名を指定
 
+
+        if file_type == 'log':
             # S3にcsvファイルをアップロード
-            bucket_name = 'log-robot-data'
-            upload_to_s3_with_date(s3, file_data, bucket_name, file_name_csv, experiment_date, experiment_number)
-            print(f"uploaded csv:{file_name_csv}")
+            upload_to_s3_with_date(s3, file_data, bucket_name, file_name, experiment_date, experiment_number)
+            print(f"uploaded csv:{file_name}")
 
             # プロット
             df = pd.read_csv(io.BytesIO(file_data))
-            file_name_png = plot_and_save(df, file_name_csv)
+            file_name_png = plot_and_save(df, file_name)
             print(f"finish plot")
 
             # S3にpngファイルをアップロード
@@ -103,32 +152,59 @@ def lambda_handler(event, context):
             item = {
                     'Date': experiment_date,
                     'OrderID': int(experiment_number),
-                    'Robot': "0",
-                    'file_name_csv': file_name_csv,
-                    'file_name_png': file_name_png,
+                    'log_csv': file_name,
+                    'log_png': file_name_png,
                     'Message': message,
                 }
             print(f"post_item: {item}")
-            add_date_item(table, item)
+            put_or_update_item(table, item)
 
+        elif file_type == 'trajectory':
+            upload_to_s3_with_date(s3, file_data, bucket_name, file_name, experiment_date, experiment_number)
+
+            item = {
+                    'Date': experiment_date,
+                    'OrderID': int(experiment_number),
+                    'trajectory': file_name,
+                    'Message': message,
+                }
+            print(f"post_item: {item}")
+            put_or_update_item(table, item)
+
+        elif file_type == 'continuous':
+            upload_to_s3_with_date(s3, file_data, bucket_name, file_name, experiment_date, experiment_number)
+
+            item = {
+                    'Date': experiment_date,
+                    'OrderID': int(experiment_number),
+                    'continuous': file_name,
+                    'Message': message,
+                }
+            print(f"post_item: {item}")
+            put_or_update_item(table, item)
+
+        else:
             return {
-                "statusCode": 200,
+                "statusCode": 400,
                 "headers": {
                     "Access-Control-Allow-Origin": "*",
                 },
                 "body": json.dumps({
-                    "message": "File uploaded successfully",
+                    "message": "file type is not supported",
                 }),
             }
+
+
         return {
-            "statusCode": 400,
+            "statusCode": 200,
             "headers": {
                 "Access-Control-Allow-Origin": "*",
             },
             "body": json.dumps({
-                "message": "File extension must be csv",
+                "message": "File uploaded successfully",
             }),
         }
+        
         
     except Exception as e:
         print(f"Exception: {str(e)}")

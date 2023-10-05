@@ -192,7 +192,7 @@ class _DataTablePageState extends State<DataTablePage> {
                         DataColumn(
                           label: Container(
                             color: Colors.deepPurple,
-                            width: 35,
+                            width: 30,
                             child: const Text('番号',style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -210,6 +210,22 @@ class _DataTablePageState extends State<DataTablePage> {
                             color: Colors.deepPurple,
                             width: 100,
                             child: const Text('Log File',style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Container(
+                            color: Colors.deepPurple,
+                            width: 100,
+                            child: const Text('trajectory',style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Container(
+                            color: Colors.deepPurple,
+                            width: 100,
+                            child: const Text('continuous',style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
@@ -235,7 +251,9 @@ class _DataTablePageState extends State<DataTablePage> {
                           cells: [
                             DataCell(Text(item['OrderID'].toString())),
                             DataCell(Text(item['Message'].toString())),
-                            DataCell(Text(item['file_name_csv'].toString())),
+                            DataCell(Text(item['log_csv'].toString())),
+                            DataCell(Text(item['trajectory'].toString())),
+                            DataCell(Text(item['continuous'].toString())),
                           ],
                         );
                       }).toList(),
