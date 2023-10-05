@@ -56,6 +56,12 @@ def update_one_item(self, partition_key, sort_key, update_expression, expression
         raise ClientError(e.response["Error"]["Message"])
     except Exception as e:
         raise Exception(str(e))
+    
+def upload_to_s3_with_date(s3, file_data, bucket_name, file_name, date, number):
+    s3_key = f"{date}/{number}/{file_name}"
+    s3.put_object(Body=file_data, Bucket=bucket_name, Key=s3_key)
+    print(f"uploaded to {s3_key}")
+    return s3_key
 
 def lambda_handler(event, context):
     print(f"call upload")
@@ -82,7 +88,7 @@ def lambda_handler(event, context):
 
             # S3にcsvファイルをアップロード
             bucket_name = 'log-robot-data'
-            s3.put_object(Body=file_data, Bucket=bucket_name, Key=file_name_csv)
+            upload_to_s3_with_date(s3, file_data, bucket_name, file_name_csv, experiment_date, experiment_number)
             print(f"uploaded csv:{file_name_csv}")
 
             # プロット
@@ -91,7 +97,8 @@ def lambda_handler(event, context):
             print(f"finish plot")
 
             # S3にpngファイルをアップロード
-            s3.upload_file(f'/tmp/{file_name_png}', bucket_name, file_name_png)
+            s3_key_png = f"{experiment_date}/{experiment_number}/{file_name_png}"
+            s3.upload_file(f'/tmp/{file_name_png}', bucket_name, s3_key_png)
 
             item = {
                     'Date': experiment_date,
