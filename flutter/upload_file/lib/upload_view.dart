@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
+import 'api_service.dart';
 import 'config.dart';
 
 class FileUploaderScreen extends StatefulWidget {
@@ -84,28 +85,8 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
       _uploadResponse = "ファイルをupload中";
     });
     final base64FileData = base64Encode(_selectedFileBytes!);
-    final response = await _performFileUpload(base64FileData);
-
+    final response = await performFileUpload(base64FileData, _selectedFileName, _selectedMonth, _selectedDay, _selectedNumber, _textEditingController.text);
     _updateUploadStatus(response);
-  }
-
-  // Perform the actual file upload
-  Future<http.Response> _performFileUpload(String base64FileData) {
-    String apiUrl = '$baseUri/upload_plot';
-    String year = '2023';
-    String formattedDate = '$year-$_selectedMonth-$_selectedDay';
-    //print(formattedDate);
-    return http.post(
-      Uri.parse(apiUrl),
-      body: jsonEncode({
-        'file_name': _selectedFileName,
-        'file_data': base64FileData,
-        'experiment_date': formattedDate,
-        'experiment_number': _selectedNumber,
-        'message': _textEditingController.text,
-      }),
-      headers: {"Content-Type": "application/json"},
-    );
   }
 
   // Update the upload status

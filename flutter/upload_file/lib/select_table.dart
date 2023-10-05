@@ -171,7 +171,7 @@ class _DataTablePageState extends State<DataTablePage> {
                 child: const Icon(Icons.refresh_outlined),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Text("Date: ${widget.formattedDate}", style: TextStyle(fontSize: 20)),
               ),
               const SizedBox(width: 30),

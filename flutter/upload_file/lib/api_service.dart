@@ -23,6 +23,23 @@ Future<List<Map<String, dynamic>>> fetchDataFromLambda(selectedDate) async {
   }
 }
 
+Future<http.Response> performFileUpload(String base64FileData, String? selectedFileName, int? selectedMonth, int? selectedDay, int? selectedNumber, String message) {
+  String apiUrl = '$baseUri/upload_plot';
+  String year = '2023';
+  String formattedDate = '$year-$selectedMonth-$selectedDay';
+  return http.post(
+    Uri.parse(apiUrl),
+    body: jsonEncode({
+      'file_name': selectedFileName,
+      'file_data': base64FileData,
+      'experiment_date': formattedDate,
+      'experiment_number': selectedNumber,
+      'message': message,
+    }),
+    headers: {"Content-Type": "application/json"},
+  );
+}
+
 Future<void> overwriteMessage(String base64FileData, String formattedDate, String textEditingControllerText) async {
   String apiUrl = '$baseUri/upload_plot';
 
