@@ -29,7 +29,7 @@ Resources:
   FileUploadFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: plot_data/
+      CodeUri: old_func/
       Handler: upload.lambda_handler
       Runtime: python3.9
       Policies:
@@ -44,29 +44,10 @@ Resources:
             RestApiId: 
               Ref: ApiGatewayApi
 
-  DownloadCsvFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: plot_data/
-      Handler: download.lambda_handler
-      Runtime: python3.9
-      Policies:
-        - AmazonDynamoDBFullAccess
-        - AmazonS3FullAccess
-      Events:
-        FileUpload:
-          Type: Api
-          Properties:
-            Path: /download_csv
-            Method: get
-            RestApiId: 
-              Ref: ApiGatewayApi
-
-
   PlotCsvFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: plot_data/
+      CodeUri: old_func/
       Handler: plot_csv.lambda_handler
       Runtime: python3.9
       Policies:
@@ -121,6 +102,24 @@ Resources:
           Properties:
             Path: /data_list
             Method: put
+            RestApiId: 
+              Ref: ApiGatewayApi
+
+  DownloadFileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: plot_data/
+      Handler: download_file.lambda_handler
+      Runtime: python3.9
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess
+      Events:
+        FileUpload:
+          Type: Api
+          Properties:
+            Path: /download_file
+            Method: get
             RestApiId: 
               Ref: ApiGatewayApi
 

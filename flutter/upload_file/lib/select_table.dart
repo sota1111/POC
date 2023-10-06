@@ -157,7 +157,6 @@ class _DataTablePageState extends State<DataTablePage> {
                   backgroundColor: Colors.green.shade700,
                 ),
                 onPressed: () async {
-                  // selectedDate は選択された日付に基づいて更新されるべき変数です
                   List<Map<String, dynamic>> newData = await fetchDataFromLambda(widget.formattedDate);
                   setState(() {
                     currentData = newData;
@@ -236,7 +235,6 @@ class _DataTablePageState extends State<DataTablePage> {
                             setState(() {
                               if (value != null) {
                                 selectedRows[index] = value;
-                                // 選択された場合は OrderID を追加、選択解除された場合は OrderID を削除
                                 if (value) {
                                   selectedRowsOrderID.add(item['OrderID'].toString());
                                 } else {
@@ -310,6 +308,7 @@ class _DataTablePageState extends State<DataTablePage> {
                 onPressed: () async {
                   bool result = await confirmSelectedRows();
                   if (result) {
+                    await downloadFile(widget.formattedDate, selectedRow);
                   }
                 },
                 child: const Text('実験データをDL'),
@@ -321,7 +320,7 @@ class _DataTablePageState extends State<DataTablePage> {
                 onPressed: () async{
                   bool result = await confirmSelectedRows();
                   if (result) {
-                    Map<String, dynamic> result = await downloadFile(widget.formattedDate, selectedRow);
+                    Map<String, dynamic> result = await downloadPlot(widget.formattedDate, selectedRow);
                     _imageLog = result['imageLog'];
                     _imageTra = result['imageTra'];
                     _imageCon = result['imageCon'];
