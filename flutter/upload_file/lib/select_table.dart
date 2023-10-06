@@ -317,32 +317,36 @@ class _DataTablePageState extends State<DataTablePage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                 ),
-                onPressed: () async{
+                onPressed: () async {
                   bool result = await confirmSelectedRows();
                   if (result) {
-                    Map<String, dynamic> result = await downloadPlot(widget.formattedDate, selectedRow);
-                    _imagePng = result['imagePng'];
-                    _imageTra = result['imageTra'];
-                    _imageCon = result['imageCon'];
-                    if (_imagePng != null) {
-                      setState(() { // Make sure to update the state
-                        _imagePng = result['imagePng'] as Uint8List?;
-                      });
-                    }
-                    if (_imageTra != null) {
-                      setState(() { // Make sure to update the state
-                        _imageTra = result['imageTra'] as Uint8List?;
-                      });
-                    }
-                    if (_imageCon != null) {
-                      setState(() { // Make sure to update the state
-                        _imageCon = result['imageCon'] as Uint8List?;
-                      });
+                    Map<String, dynamic> dlResult = await downloadPlot(widget.formattedDate, selectedRow);
+                    _imagePng = dlResult['imagePng'];
+                    _imageTra = dlResult['imageTra'];
+                    _imageCon = dlResult['imageCon'];
+
+                    if (MediaQuery.of(context).size.width <= 600) {
+                      // For smartphone, navigate to a new page containing _buildRightColumn
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            title: Text('実験結果'),
+                            backgroundColor: Colors.black,
+                          ),
+                          body: _buildRightColumn(),
+                        ),
+                      ));
+                    } else {
+                      // For tablets or larger screens, update the state
+                      if (_imagePng != null) setState(() { _imagePng = dlResult['imagePng'] as Uint8List?; });
+                      if (_imageTra != null) setState(() { _imageTra = dlResult['imageTra'] as Uint8List?; });
+                      if (_imageCon != null) setState(() { _imageCon = dlResult['imageCon'] as Uint8List?; });
                     }
                   }
                 },
                 child: const Text('実験結果を確認'),
               ),
+
             ],
           ),
           const SizedBox(height: 20),
@@ -352,7 +356,9 @@ class _DataTablePageState extends State<DataTablePage> {
   }
 
   Widget _buildRightColumn() {
-    return Expanded(
+    return MediaQuery.of(context).size.width > 600
+        ? // For tablets and larger screens
+    Expanded(
       flex: 5, // 4 parts of available space
       child: SingleChildScrollView(
         child: Column(
@@ -368,7 +374,19 @@ class _DataTablePageState extends State<DataTablePage> {
           ],
         ),
       ),
+    )
+        : // For phones
+    SingleChildScrollView(
+      child: Column(
+        children: [
+          if (_imagePng != null && _imagePng!.isNotEmpty)
+            Image.memory(_imagePng!),
+          if (_imageTra != null && _imageTra!.isNotEmpty)
+            Image.memory(_imageTra!),
+          if (_imageCon != null && _imageCon!.isNotEmpty)
+            Image.memory(_imageCon!)
+        ],
+      ),
     );
   }
-
 }
