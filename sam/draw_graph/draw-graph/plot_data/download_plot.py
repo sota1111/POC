@@ -42,17 +42,24 @@ def lambda_handler(event, context):
         # Fetch experiment data from DynamoDB
         item = get_experiment_data_from_dynamodb(experiment_date, experiment_number)
         print(f"item: {item}")
+        log_csv = item.get('log_csv', '')
         log_png = item.get('log_png', '')
         trajectory = item.get('trajectory', '')
         continuous = item.get('continuous', '')
 
         bucket_name = 'log-robot-data'
 
-        if log_png:
-            content_log = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{log_png}")
-            base64_encoded_log = to_base64_encoded(content_log)
+        if log_csv:
+            content_csv = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{log_csv}")
+            base64_encoded_csv = to_base64_encoded(content_csv)
         else:
-            base64_encoded_log = None
+            base64_encoded_csv = None
+
+        if log_png:
+            content_png = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{log_png}")
+            base64_encoded_png = to_base64_encoded(content_png)
+        else:
+            base64_encoded_png = None
 
         if trajectory:
             content_tra = fetch_s3_object(bucket_name, f"{experiment_date}/{experiment_number}/{trajectory}")
@@ -78,10 +85,20 @@ def lambda_handler(event, context):
             },
             "body": json.dumps({
                 "message": "File downloaded successfully",
-                "data_log": base64_encoded_log,
+
+                "name_csv": log_csv,
+                "data_csv": base64_encoded_csv,
+                "type": "text/csv",
+
+                "name_png": log_png,
+                "data_png": base64_encoded_png,
                 "type": "image/png",
+
+                "name_trajectory": trajectory,
                 "data_trajectory": base64_encoded_tra,
                 "type": content_type_tra,
+
+                "name_continuous": continuous,
                 "data_continuous": base64_encoded_con,
                 "type": content_type_con,
             }),
