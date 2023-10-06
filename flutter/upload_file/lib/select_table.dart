@@ -18,7 +18,7 @@ class _DataTablePageState extends State<DataTablePage> {
   List<String> selectedRowsOrderID = [];
   final TextEditingController _textEditingController = TextEditingController();
   String _downloadMessage = "No File Downloaded";
-  Uint8List? _imageLog;
+  Uint8List? _imagePng;
   Uint8List? _imageTra;
   Uint8List? _imageCon;
   late List<Map<String, dynamic>> currentData;
@@ -321,12 +321,12 @@ class _DataTablePageState extends State<DataTablePage> {
                   bool result = await confirmSelectedRows();
                   if (result) {
                     Map<String, dynamic> result = await downloadPlot(widget.formattedDate, selectedRow);
-                    _imageLog = result['imageLog'];
+                    _imagePng = result['imagePng'];
                     _imageTra = result['imageTra'];
                     _imageCon = result['imageCon'];
-                    if (_imageLog != null) {
+                    if (_imagePng != null) {
                       setState(() { // Make sure to update the state
-                        _imageLog = result['imageLog'] as Uint8List?;
+                        _imagePng = result['imagePng'] as Uint8List?;
                       });
                     }
                     if (_imageTra != null) {
@@ -359,8 +359,8 @@ class _DataTablePageState extends State<DataTablePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('実験結果'),
-            if (_imageLog != null && _imageLog!.isNotEmpty)
-              Image.memory(_imageLog!),
+            if (_imagePng != null && _imagePng!.isNotEmpty)
+              Image.memory(_imagePng!),
             if (_imageTra != null && _imageTra!.isNotEmpty)
               Image.memory(_imageTra!),
             if (_imageCon != null && _imageCon!.isNotEmpty)

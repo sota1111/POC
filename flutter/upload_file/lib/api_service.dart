@@ -90,29 +90,41 @@ Future<void> downloadFile(formattedDate, selectedRow) async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = jsonDecode(response.body);
 
-    final String base64StrLog = data['data_log'] ?? '';
+    final String base64StrCsv = data['data_csv'] ?? '';
+    final String base64StrPng = data['data_png'] ?? '';
     final String base64StrTra = data['data_trajectory'] ?? '';
     final String base64StrCon = data['data_continuous'] ?? '';
 
-    final Uint8List bytesLog = base64StrLog.isNotEmpty ? base64Decode(base64StrLog) : Uint8List(0);
+    final Uint8List bytesCsv = base64StrCsv.isNotEmpty ? base64Decode(base64StrCsv) : Uint8List(0);
+    final Uint8List bytesPng = base64StrPng.isNotEmpty ? base64Decode(base64StrPng) : Uint8List(0);
     final Uint8List bytesTra = base64StrTra.isNotEmpty ? base64Decode(base64StrTra) : Uint8List(0);
     final Uint8List bytesCon = base64StrCon.isNotEmpty ? base64Decode(base64StrCon) : Uint8List(0);
 
     // ここからブラウザでのダウンロード処理
-    if (bytesLog.isNotEmpty) {
-      final blobLog = html.Blob([bytesLog]);
-      final urlLog = html.Url.createObjectUrlFromBlob(blobLog);
-      final anchorLog = html.AnchorElement(href: urlLog)
-        ..setAttribute("download", "log.png")
+    print(data['name_csv']);
+    if (bytesCsv.isNotEmpty) {
+      final blobCsv = html.Blob([bytesCsv]);
+      final urlCsv = html.Url.createObjectUrlFromBlob(blobCsv);
+      final anchorCsv = html.AnchorElement(href: urlCsv)
+        ..setAttribute("download", data['name_csv'])
         ..click();
-      html.Url.revokeObjectUrl(urlLog);
+      html.Url.revokeObjectUrl(urlCsv);
+    }
+
+    if (bytesPng.isNotEmpty) {
+      final blobPng = html.Blob([bytesPng]);
+      final urlPng = html.Url.createObjectUrlFromBlob(blobPng);
+      final anchorPng = html.AnchorElement(href: urlPng)
+        ..setAttribute("download", data['name_png'])
+        ..click();
+      html.Url.revokeObjectUrl(urlPng);
     }
 
     if (bytesTra.isNotEmpty) {
       final blobTra = html.Blob([bytesTra]);
       final urlTra = html.Url.createObjectUrlFromBlob(blobTra);
       final anchorTra = html.AnchorElement(href: urlTra)
-        ..setAttribute("download", "trajectory.png")
+        ..setAttribute("download", data['name_trajectory'])
         ..click();
       html.Url.revokeObjectUrl(urlTra);
     }
@@ -121,7 +133,7 @@ Future<void> downloadFile(formattedDate, selectedRow) async {
       final blobCon = html.Blob([bytesCon]);
       final urlCon = html.Url.createObjectUrlFromBlob(blobCon);
       final anchorCon = html.AnchorElement(href: urlCon)
-        ..setAttribute("download", "continuous.png")
+        ..setAttribute("download", data['name_continuous'])
         ..click();
       html.Url.revokeObjectUrl(urlCon);
     }
@@ -137,11 +149,11 @@ Future<Map<String, dynamic>> downloadPlot(formattedDate, selectedRow) async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = jsonDecode(response.body);
 
-    final String base64StrLog = data['data_log'] ?? '';
+    final String base64StrPng = data['data_png'] ?? '';
     final String base64StrTra = data['data_trajectory'] ?? '';
     final String base64StrCon = data['data_continuous'] ?? '';
 
-    final Uint8List bytesLog = base64StrLog.isNotEmpty ? base64Decode(base64StrLog) : Uint8List(0);
+    final Uint8List bytesPng = base64StrPng.isNotEmpty ? base64Decode(base64StrPng) : Uint8List(0);
     final Uint8List bytesTra = base64StrTra.isNotEmpty ? base64Decode(base64StrTra) : Uint8List(0);
     final Uint8List bytesCon = base64StrCon.isNotEmpty ? base64Decode(base64StrCon) : Uint8List(0);
 
@@ -149,7 +161,7 @@ Future<Map<String, dynamic>> downloadPlot(formattedDate, selectedRow) async {
     print('serverResponse$serverResponse');
     return {
       'message': 'File Downloaded Successfully',
-      'imageLog': bytesLog,
+      'imagePng': bytesPng,
       'imageTra': bytesTra,
       'imageCon': bytesCon,
     };
