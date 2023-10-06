@@ -69,7 +69,7 @@ Future<void> overwriteMessage(String formattedDate, String selectedNumber, Strin
   }
 }
 
-Future<void> downloadFile(formattedDate, selectedRow) async {
+Future<http.Response> commonDownloadApiRequest(formattedDate, selectedRow) async {
   print("selectedRow:$selectedRow");
   String apiUrl = '$baseUri/download_plot';
   final response = await http.post(
@@ -80,6 +80,12 @@ Future<void> downloadFile(formattedDate, selectedRow) async {
     }),
     headers: {"Content-Type": "application/json"},
   );
+
+  return response;
+}
+
+Future<void> downloadFile(formattedDate, selectedRow) async {
+  final response = await commonDownloadApiRequest(formattedDate, selectedRow);
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = jsonDecode(response.body);
@@ -125,18 +131,8 @@ Future<void> downloadFile(formattedDate, selectedRow) async {
   }
 }
 
-
 Future<Map<String, dynamic>> downloadPlot(formattedDate, selectedRow) async {
-  print("selectedRow:$selectedRow");
-  String apiUrl = '$baseUri/download_plot';
-  final response = await http.post(
-    Uri.parse(apiUrl),
-    body: jsonEncode({
-      'experiment_date': formattedDate,
-      'experiment_number': selectedRow,
-    }),
-    headers: {"Content-Type": "application/json"},
-  );
+  final response = await commonDownloadApiRequest(formattedDate, selectedRow);
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = jsonDecode(response.body);
