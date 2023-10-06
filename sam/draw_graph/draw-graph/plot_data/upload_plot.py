@@ -78,7 +78,10 @@ def put_or_update_item(table, item):
             expression_attribute_values = {}
             
             for key, value in item.items():
-                if key not in ['Date', 'OrderID']:  # パーティションキーとソートキーは更新しない
+                if key not in ['Date', 'OrderID']:
+                    if key == 'Message' and value == "":
+                        print(f"value:{value}")
+                        continue
                     update_expression += f"{key} = :{key}, "
                     expression_attribute_values[f":{key}"] = value
             
@@ -124,7 +127,7 @@ def lambda_handler(event, context):
         print(f"experiment_date:{experiment_date}")
         experiment_number = body.get('experiment_number', '0')
         print(f"experiment_number:{experiment_number}")
-        message = body.get('message', 'hello')
+        message = body.get('message', '')
         file_type = body.get('file_type', '')
         print(f"file_type:{file_type}")
         
