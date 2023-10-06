@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'api_service.dart';
+import 'upload_view.dart';
 
 class DataTablePage extends StatefulWidget {
   final List<Map<String, dynamic>> data;
@@ -126,7 +127,7 @@ class _DataTablePageState extends State<DataTablePage> {
         ? // For tablets and larger screens
     Row(
       children: [
-        _buildLeftColumn(),
+        _buildLeftColumn(context),
         const VerticalDivider(
           color: Colors.grey,
           thickness: 1.0,
@@ -137,12 +138,13 @@ class _DataTablePageState extends State<DataTablePage> {
         : // For phones
     Column(
       children: [
-        _buildLeftColumn(),
+        _buildLeftColumn(context),
       ],
     );
   }
 
-  Widget _buildLeftColumn() {
+  Widget _buildLeftColumn(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Expanded(
       flex: 5,
       child: Column(
@@ -293,13 +295,25 @@ class _DataTablePageState extends State<DataTablePage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                 ),
-                onPressed: () async{
-                  bool result = await confirmSelectedRows();
-                  if (result) {
-                    sendModifyMessage();
+                onPressed: () async {
+                  if (width > 600) {
+                    bool result = await confirmSelectedRows();
+                    if (result) {
+                      sendModifyMessage();
+                    }
+                  } else {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text('実験条件編集'),
+                          backgroundColor: Colors.black,
+                        ),
+                        body: FileUploaderScreen(),
+                      ),
+                    ));
                   }
                 },
-                child: const Text('実験条件を編集'),
+                child: Text(width <= 600 ? 'upload' : '実験条件編集'),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -311,7 +325,7 @@ class _DataTablePageState extends State<DataTablePage> {
                     await downloadFile(widget.formattedDate, selectedRow);
                   }
                 },
-                child: const Text('実験データをDL'),
+                child: const Text('データDL'),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -344,7 +358,7 @@ class _DataTablePageState extends State<DataTablePage> {
                     }
                   }
                 },
-                child: const Text('実験結果を確認'),
+                child: const Text('グラフ表示'),
               ),
 
             ],
