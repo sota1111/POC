@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart' as auth;
+import 'package:amplify_authenticator/amplify_authenticator.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'amplifyconfiguration.dart';
 import 'upload_view.dart';
 import 'select_table.dart';
 import 'api_service.dart';
@@ -7,14 +11,42 @@ void main() {
   runApp(PlotDataApp());
 }
 
-class PlotDataApp extends StatelessWidget {
+class PlotDataApp extends StatefulWidget {
+  const PlotDataApp({Key? key}) : super(key: key);
+
+  @override
+  State<PlotDataApp> createState() => _AuthState();
+}
+
+class _AuthState extends State<PlotDataApp> {
+  @override
+  void initState() {
+    super.initState();
+    _configureAmplify();
+  }
+
+  void _configureAmplify() async {
+    try {
+      final authPlugin = auth.AmplifyAuthCognito();
+      Amplify.addPlugin(authPlugin);
+      await Amplify.configure(amplifyconfig);
+      debugPrint('Successfully configured');
+    } catch (e) {
+      debugPrint('Error configuring Amplify: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: PlotDataPage(),
+    return Authenticator(
+      child: MaterialApp(
+        builder: Authenticator.builder(),
+        home: PlotDataPage(),
+      ),
     );
   }
 }
+
 
 class PlotDataPage extends StatefulWidget {
   @override
