@@ -1,0 +1,101 @@
+{
+  "auth": {
+    "uploadfile80d32584": {
+      "customAuth": false,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_auth_uploadfile80d32584_allowUnauthenticatedIdentities": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_authRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_authRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_identityPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_identityPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_unauthRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_unauthRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    },
+    "AMPLIFY_auth_uploadfile80d32584_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "uploadfile80d32584"
+        }
+      ]
+    }
+  }
+}
