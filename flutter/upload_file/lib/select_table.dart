@@ -23,6 +23,7 @@ class _DataTablePageState extends State<DataTablePage> {
   Uint8List? _imageTra;
   Uint8List? _imageCon;
   late List<Map<String, dynamic>> currentData;
+  bool isLoading = false;
 
 
   @override
@@ -159,11 +160,17 @@ class _DataTablePageState extends State<DataTablePage> {
                   backgroundColor: Colors.green.shade700,
                 ),
                 onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  print("isLoading:$isLoading");
                   List<Map<String, dynamic>> newData = await fetchDataFromLambda(widget.formattedDate);
                   setState(() {
                     currentData = newData;
                     print(currentData);
                     selectedRows = List<bool>.generate(currentData.length, (index) => false);
+                    isLoading = false;
+                    print("isLoading:$isLoading");
                   });
                 },
                 child: const Icon(Icons.refresh_outlined),
@@ -257,6 +264,15 @@ class _DataTablePageState extends State<DataTablePage> {
                     ),
                   ),
                 ),
+                if (isLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.6),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
                 Positioned(
                   top: 0,
                   bottom: 0,
@@ -334,11 +350,19 @@ class _DataTablePageState extends State<DataTablePage> {
                 onPressed: () async {
                   bool result = await confirmSelectedRows();
                   if (result) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    print("isLoading:$isLoading");
                     Map<String, dynamic> dlResult = await downloadPlot(widget.formattedDate, selectedRow);
                     _imagePng = dlResult['imagePng'];
                     _imageTra = dlResult['imageTra'];
                     _imageCon = dlResult['imageCon'];
+                    setState(() {
+                      isLoading = false;
+                    });
 
+                    print("isLoading:$isLoading");
                     if (MediaQuery.of(context).size.width <= 600) {
                       // For smartphone, navigate to a new page containing _buildRightColumn
                       Navigator.of(context).push(MaterialPageRoute(

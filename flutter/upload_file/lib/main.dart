@@ -103,10 +103,8 @@ class _PlotDataState extends State<PlotDataPage> {
           future: fetchDataFromLambda(formattedDate),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
-                padding: EdgeInsets.only(top: 100.0),
-                child: CircularProgressIndicator(),
-              );
+              // Replace CircularProgressIndicator with an empty Container or other widget
+              return Container();  // Empty container
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
