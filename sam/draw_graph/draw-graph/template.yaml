@@ -80,6 +80,24 @@ Resources:
             RestApiId: 
               Ref: ApiGatewayApi
 
+  OverlapFrameFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: plot_data/
+      Handler: overlap_frame.lambda_handler
+      Runtime: python3.9
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess
+      Events:
+        PlotCsv:
+          Type: Api
+          Properties:
+            Path: /overlap_frame
+            Method: post
+            RestApiId: 
+              Ref: ApiGatewayApi
+
   DataListFunction:
     Type: AWS::Serverless::Function
     Properties:
