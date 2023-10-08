@@ -397,51 +397,49 @@ class _DataTablePageState extends State<DataTablePage> {
     );
   }
 
-  Widget _buildRightColumn() {
-    return MediaQuery.of(context).size.width > 600
-        ? // For tablets and larger screens
-    Expanded(
-      flex: 5, // 4 parts of available space
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('実験結果'),
-            if (_imagePng != null && _imagePng!.isNotEmpty)
-              Image.memory(_imagePng!),
-            if (_imageTra != null && _imageTra!.isNotEmpty)
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: Image.memory(_imageTra!),
-              ),
-            if (_imageCon != null && _imageCon!.isNotEmpty)
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: Image.memory(_imageCon!),
-              )
+  Widget _buildImageWidget(Uint8List? imageData, {bool withBorder = false}) {
+    if (imageData == null || imageData.isEmpty) return SizedBox.shrink();
+    return InteractiveViewer(
+      minScale: 1.0,
+      maxScale: 5.0,
+      child: Container(
+        decoration: withBorder
+            ? BoxDecoration(
+          border: Border.all(color: Colors.white, width: 2),
+        )
+            : null,
+        child: Image.memory(imageData),
+      ),
+    );
+  }
 
-          ],
-        ),
-      ),
-    )
-        : // For phones
-    SingleChildScrollView(
-      child: Column(
-        children: [
-          if (_imagePng != null && _imagePng!.isNotEmpty)
-            Image.memory(_imagePng!),
-          const SizedBox(height: 30),
-          if (_imageTra != null && _imageTra!.isNotEmpty)
-            Image.memory(_imageTra!),
-          const SizedBox(height: 30),
-          if (_imageCon != null && _imageCon!.isNotEmpty)
-            Image.memory(_imageCon!)
-        ],
-      ),
+
+
+  Widget _buildRightColumn() {
+    List<Widget> buildChildren() {
+      return [
+        if (_imagePng != null && _imagePng!.isNotEmpty) _buildImageWidget(_imagePng),
+        if (_imageTra != null && _imageTra!.isNotEmpty) _buildImageWidget(_imageTra, withBorder: true),
+        if (_imageCon != null && _imageCon!.isNotEmpty) _buildImageWidget(_imageCon, withBorder: true),
+      ];
+    }
+
+    var commonChildren = buildChildren();
+
+    return MediaQuery.of(context).size.width > 600
+        ? Expanded(
+          flex: 5,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [const Text('実験結果'), ...commonChildren],
+            ),
+          ),
+        )
+        : SingleChildScrollView(
+            child: Column(
+              children: [...commonChildren, const SizedBox(height: 30)],
+            ),
     );
   }
 }
