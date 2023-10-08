@@ -89,6 +89,9 @@ class _DataTablePageState extends State<DataTablePage> {
   }
 
   void sendModifyMessage() async {
+    final initialMessage = currentData.firstWhere((element) => element['OrderID'].toString() == selectedRow)['Message'].toString();
+    _textEditingController.text = initialMessage;
+
     final result = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -413,8 +416,6 @@ class _DataTablePageState extends State<DataTablePage> {
     );
   }
 
-
-
   Widget _buildRightColumn() {
     List<Widget> buildChildren() {
       return [
@@ -425,7 +426,6 @@ class _DataTablePageState extends State<DataTablePage> {
     }
 
     var commonChildren = buildChildren();
-
     return MediaQuery.of(context).size.width > 600
         ? Expanded(
           flex: 5,
