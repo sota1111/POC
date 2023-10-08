@@ -14,6 +14,18 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+def filter_imu_rows(df):
+    if 'IMU' in df.columns:
+        df = df[df['IMU'] == " IMU"]
+    return df
+
+def convert_columns_to_numeric(df):
+    for col in df.columns:
+        if df[col].dtype == 'object':
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+    return df
+
+
 def plot_and_save(df, file_name):
     all_columns_to_plot = [
         'AccX', 'AccY', 'AccZ', 'MagX', 'MagY', 'MagZ', 'GyrX', 'GyrY', 'GyrZ',
@@ -165,6 +177,8 @@ def lambda_handler(event, context):
 
             # プロット
             df = pd.read_csv(io.BytesIO(file_data), on_bad_lines='skip')
+            df = filter_imu_rows(df)
+            df = convert_columns_to_numeric(df)
             file_name_png = plot_and_save(df, file_name)
             print(f"finish plot")
 
