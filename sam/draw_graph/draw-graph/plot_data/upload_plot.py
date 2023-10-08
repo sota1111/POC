@@ -26,10 +26,16 @@ def plot_and_save(df, file_name):
 
     axes = axes.flatten()
     for i, col in enumerate(all_columns_to_plot):
-        axes[i].plot(df['Time'], df[col], label=col)
-        axes[i].set_title(f'{col}')
-        axes[i].set_xlabel('Time')
-        axes[i].set_ylabel(col)
+        if col in df.columns:
+            try:
+                axes[i].plot(df['Time'], df[col], label=col)
+                axes[i].set_title(f'{col}')
+                axes[i].set_xlabel('Time')
+                axes[i].set_ylabel(col)
+            except KeyError:
+                print(f"Warning: Column {col} is missing. Skipping this column.")
+            except Exception as e:
+                print(f"An unexpected error occurred while plotting {col}: {e}. Skipping this column.")
 
     for i in range(len(all_columns_to_plot), len(axes)):
         fig.delaxes(axes[i])
@@ -158,7 +164,7 @@ def lambda_handler(event, context):
             print(f"uploaded csv:{file_name}")
 
             # プロット
-            df = pd.read_csv(io.BytesIO(file_data))
+            df = pd.read_csv(io.BytesIO(file_data), on_bad_lines='skip')
             file_name_png = plot_and_save(df, file_name)
             print(f"finish plot")
 
