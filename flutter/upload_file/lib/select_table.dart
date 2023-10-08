@@ -190,6 +190,7 @@ class _DataTablePageState extends State<DataTablePage> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
+                      dataRowHeight: 400,
                       headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
                         return Colors.deepPurple;
                       }),
@@ -354,6 +355,9 @@ class _DataTablePageState extends State<DataTablePage> {
                       isLoading = true;
                     });
                     print("isLoading:$isLoading");
+                    _imagePng = null;
+                    _imageTra = null;
+                    _imageCon = null;
                     Map<String, dynamic> dlResult = await downloadPlot(widget.formattedDate, selectedRow);
                     _imagePng = dlResult['imagePng'];
                     _imageTra = dlResult['imageTra'];
@@ -406,9 +410,20 @@ class _DataTablePageState extends State<DataTablePage> {
             if (_imagePng != null && _imagePng!.isNotEmpty)
               Image.memory(_imagePng!),
             if (_imageTra != null && _imageTra!.isNotEmpty)
-              Image.memory(_imageTra!),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: Image.memory(_imageTra!),
+              ),
             if (_imageCon != null && _imageCon!.isNotEmpty)
-              Image.memory(_imageCon!)
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: Image.memory(_imageCon!),
+              )
+
           ],
         ),
       ),
@@ -419,8 +434,10 @@ class _DataTablePageState extends State<DataTablePage> {
         children: [
           if (_imagePng != null && _imagePng!.isNotEmpty)
             Image.memory(_imagePng!),
+          const SizedBox(height: 30),
           if (_imageTra != null && _imageTra!.isNotEmpty)
             Image.memory(_imageTra!),
+          const SizedBox(height: 30),
           if (_imageCon != null && _imageCon!.isNotEmpty)
             Image.memory(_imageCon!)
         ],
