@@ -15,12 +15,26 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def plot_and_save(df, file_name):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(df['data_x'], df['data_y'], marker='o')
-    ax.set_xlabel('time')
-    ax.set_ylabel('data')
-    ax.grid(True)
-    print(f"Finish plot")
+    all_columns_to_plot = [
+        'AccX', 'AccY', 'AccZ', 'MagX', 'MagY', 'MagZ', 'GyrX', 'GyrY', 'GyrZ',
+        'Head', 'Roll', 'Pitch', 'QuaW', 'QuaX', 'QuaY', 'QuaZ', 'LiaX', 'LiaY',
+        'LiaZ', 'GrvX', 'GrvY', 'GrvZ'
+    ]
+    
+    fig, axes = plt.subplots(nrows=8, ncols=3, figsize=(18, 32))
+    fig.suptitle('Time Series Plots of All Relevant Gyro Sensor Data')
+
+    axes = axes.flatten()
+    for i, col in enumerate(all_columns_to_plot):
+        axes[i].plot(df['Time'], df[col], label=col)
+        axes[i].set_title(f'{col}')
+        axes[i].set_xlabel('Time')
+        axes[i].set_ylabel(col)
+
+    for i in range(len(all_columns_to_plot), len(axes)):
+        fig.delaxes(axes[i])
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.97])
     
     png_file_name = os.path.splitext(file_name)[0] + '.png'
     fig.savefig(f'/tmp/{png_file_name}')
