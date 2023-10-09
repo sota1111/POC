@@ -16,7 +16,7 @@ logger.setLevel(logging.INFO)
 
 def filter_imu_rows(df):
     if 'IMU' in df.columns:
-        df = df[df['IMU'] == " IMU"]
+        df = df[(df['IMU'] == " IMU") | (df['IMU'] == " GYRO")]
     return df
 
 def convert_columns_to_numeric(df):
@@ -27,13 +27,13 @@ def convert_columns_to_numeric(df):
 
 
 def plot_and_save(df, file_name):
-    all_columns_to_plot = [
+    all_columns_to_plot = all_columns_to_plot = [
         'AccX', 'AccY', 'AccZ', 'MagX', 'MagY', 'MagZ', 'GyrX', 'GyrY', 'GyrZ',
         'Head', 'Roll', 'Pitch', 'QuaW', 'QuaX', 'QuaY', 'QuaZ', 'LiaX', 'LiaY',
-        'LiaZ', 'GrvX', 'GrvY', 'GrvZ'
+        'LiaZ', 'GrvX', 'GrvY', 'GrvZ', 'FLOW1', 'FLOW2', 'MOT1', 'MOT2', 'BLK1', 'BLK2'
     ]
     
-    fig, axes = plt.subplots(nrows=8, ncols=3, figsize=(18, 32))
+    fig, axes = plt.subplots(nrows=7, ncols=4, figsize=(20, 35))
     fig.suptitle('Time Series Plots of All Relevant Gyro Sensor Data')
 
     axes = axes.flatten()
@@ -167,16 +167,21 @@ def lambda_handler(event, context):
         s3 = boto3.client('s3')
         db = boto3.resource('dynamodb')
         table = db.Table('experiment')
-        bucket_name = 'log-robot-data'  # バケット名を指定
+        bucket_name = 'log-robot-data'
 
 
         if file_type == 'log':
-            # S3にcsvファイルをアップロード
-            upload_to_s3_with_date(s3, file_data, bucket_name, file_name, experiment_date, experiment_number)
+            header_to_add = "AD,AD1,AD2,AD3,AD4,AD5,AD6,AD7,AD8,FLOW,FLOW1,FLOW2,MOT,MOT1,MOT2,BLK1,BLK2"
+            df = pd.read_csv(io.BytesIO(file_data), header=None, engine='python', on_bad_lines='skip')
+            lines = io.StringIO(file_data.decode('utf-8')).readlines()
+            updated_first_line = f"{lines[0].strip()},{header_to_add}"
+            lines[0] = updated_first_line
+            updated_file_data = '\n'.join(lines).encode('utf-8')
+            upload_to_s3_with_date(s3, updated_file_data, bucket_name, file_name, experiment_date, experiment_number)
             print(f"uploaded csv:{file_name}")
 
             # プロット
-            df = pd.read_csv(io.BytesIO(file_data), on_bad_lines='skip')
+            df = pd.read_csv(io.BytesIO(updated_file_data), on_bad_lines='skip')
             df = filter_imu_rows(df)
             df = convert_columns_to_numeric(df)
             file_name_png = plot_and_save(df, file_name)
