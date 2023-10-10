@@ -16,25 +16,44 @@ class _StreamVideoState extends State<StreamVideo> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network('https://d26nj1ndv161pg.cloudfront.net/output/trim.m3u8')
-      ..initialize().then((_) {
-        setState(() {});
-      });
+    _controller = VideoPlayerController.network('https://d26nj1ndv161pg.cloudfront.net/output/side_1009_12.m3u8');
+    _controller.initialize().then((_) {
+      setState(() {});
+    });
+    _controller.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text('Video Player Example')),
-        body: Center(
-          child: _controller.value.isInitialized
-              ? AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
-          )
-              : CircularProgressIndicator(),
-        ),
+        body: _controller.value.isInitialized
+            ? Stack(
+          children: [
+            AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: VideoPlayer(_controller),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Slider(
+                value: _controller.value.position.inMilliseconds.toDouble(),
+                min: 0.0,
+                max: _controller.value.duration.inMilliseconds.toDouble(),
+                onChanged: (double value) {
+                  setState(() {
+                    _controller.seekTo(Duration(milliseconds: value.toInt()));
+                  });
+                },
+              ),
+            ),
+          ],
+        )
+            : Center(child: CircularProgressIndicator()),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {
