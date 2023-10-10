@@ -342,8 +342,14 @@ class _DataTablePageState extends State<DataTablePage> {
                 onPressed: () async {
                   bool result = await confirmSelectedRows();
                   if (result) {
+                    setState(() {
+                      isLoading = true;
+                    });
                     await downloadFile(widget.formattedDate, selectedRow);
                   }
+                  setState(() {
+                    isLoading = false;
+                  });
                 },
                 child: const Text('データDL'),
               ),
