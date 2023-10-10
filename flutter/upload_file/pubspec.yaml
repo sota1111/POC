@@ -44,6 +44,8 @@ dependencies:
   amplify_auth_cognito: ^1.4.2
   amplify_authenticator: ^1.4.2
   amplify_flutter: ^1.4.1
+  video_player: ^2.7.2
+  video_player_web_hls: ^1.1.0
 
 dev_dependencies:
   flutter_test:

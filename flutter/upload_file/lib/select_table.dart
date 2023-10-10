@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'api_service.dart';
 import 'upload_view.dart';
+import 'stream_video.dart';
 
 class DataTablePage extends StatefulWidget {
   final List<Map<String, dynamic>> data;
@@ -333,7 +334,7 @@ class _DataTablePageState extends State<DataTablePage> {
                     ));
                   }
                 },
-                child: Text(width <= 600 ? 'upload' : '実験条件編集'),
+                child: Text(width <= 600 ? 'upload' : 'edit'),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -351,7 +352,7 @@ class _DataTablePageState extends State<DataTablePage> {
                     isLoading = false;
                   });
                 },
-                child: const Text('データDL'),
+                child: const Text('download'),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -395,7 +396,31 @@ class _DataTablePageState extends State<DataTablePage> {
                     }
                   }
                 },
-                child: const Text('グラフ表示'),
+                child: const Text('graph'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                ),
+                onPressed: () async {
+                  bool result = await confirmSelectedRows();
+                  if (result) {
+                    setState(() {
+                      isLoading = true;
+                    });
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StreamVideo(formattedDate:widget.formattedDate,  selectedRow:selectedRow)
+                      ),
+                    );
+
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
+                },
+                child: const Text('video'),
               ),
 
             ],
