@@ -195,7 +195,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
             ),
             const SizedBox(height: 30),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 ElevatedButton(
                   onPressed: _pickCsvFile,
@@ -203,20 +203,6 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
                     backgroundColor: Colors.black,
                   ),
                   child: const Text("CsvFile選択"),
-                ),
-                ElevatedButton(
-                  onPressed: _pickTrajectoryFile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                  ),
-                  child: const Text("軌道写真選択"),
-                ),
-                ElevatedButton(
-                  onPressed: _pickContinuousPictureFile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                  ),
-                  child: const Text("連続写真選択"),
                 ),
               ],
             ),
