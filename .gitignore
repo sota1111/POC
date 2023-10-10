@@ -1,1 +1,4 @@
 sam/draw_graph/draw-graph/.aws-sam/*
+*.MOV
+*.mp4
+*.png
