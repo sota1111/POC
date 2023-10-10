@@ -17,6 +17,8 @@ Resources:
       CodeUri: hello_world/
       Handler: app.lambda_handler
       Runtime: python3.9
+      Timeout: 30
+      MemorySize: 256
       Events:
         HelloWorld:
           Type: Api
@@ -25,49 +27,14 @@ Resources:
             Method: get
             RestApiId: 
               Ref: ApiGatewayApi
-
-  FileUploadFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: old_func/
-      Handler: upload.lambda_handler
-      Runtime: python3.9
-      Policies:
-        - AmazonDynamoDBFullAccess
-        - AmazonS3FullAccess
-      Events:
-        FileUpload:
-          Type: Api
-          Properties:
-            Path: /upload
-            Method: post
-            RestApiId: 
-              Ref: ApiGatewayApi
-
-  PlotCsvFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: old_func/
-      Handler: plot_csv.lambda_handler
-      Runtime: python3.9
-      Policies:
-        - AmazonDynamoDBFullAccess
-        - AmazonS3FullAccess
-      Events:
-        PlotCsv:
-          Type: Api
-          Properties:
-            Path: /plot_csv
-            Method: post
-            RestApiId: 
-              Ref: ApiGatewayApi
-
   UploadPlotFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: plot_data/
       Handler: upload_plot.lambda_handler
       Runtime: python3.9
+      Timeout: 60
+      MemorySize: 1024
       Policies:
         - AmazonDynamoDBFullAccess
         - AmazonS3FullAccess
@@ -80,23 +47,6 @@ Resources:
             RestApiId: 
               Ref: ApiGatewayApi
 
-  OverlapFrameFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: plot_data/
-      Handler: overlap_frame.lambda_handler
-      Runtime: python3.9
-      Policies:
-        - AmazonDynamoDBFullAccess
-        - AmazonS3FullAccess
-      Events:
-        PlotCsv:
-          Type: Api
-          Properties:
-            Path: /overlap_frame
-            Method: post
-            RestApiId: 
-              Ref: ApiGatewayApi
 
   DataListFunction:
     Type: AWS::Serverless::Function
@@ -104,6 +54,8 @@ Resources:
       CodeUri: plot_data/
       Handler: data_list.lambda_handler
       Runtime: python3.9
+      Timeout: 30
+      MemorySize: 256
       Policies:
         - AmazonDynamoDBFullAccess
         - AmazonS3FullAccess
@@ -129,6 +81,8 @@ Resources:
       CodeUri: plot_data/
       Handler: download_file.lambda_handler
       Runtime: python3.9
+      Timeout: 30
+      MemorySize: 256
       Policies:
         - AmazonDynamoDBFullAccess
         - AmazonS3FullAccess
@@ -147,6 +101,8 @@ Resources:
       CodeUri: plot_data/
       Handler: download_plot.lambda_handler
       Runtime: python3.9
+      Timeout: 30
+      MemorySize: 256
       Policies:
         - AmazonDynamoDBFullAccess
         - AmazonS3FullAccess

@@ -44,6 +44,14 @@ def plot_and_save(df, file_name):
                 axes[i].set_title(f'{col}')
                 axes[i].set_xlabel('Time')
                 axes[i].set_ylabel(col)
+                axes[i].grid(True)
+
+                # Adding FLOW2 on the second y-axis
+                if 'FLOW2' in df.columns:
+                    ax2 = axes[i].twinx()
+                    ax2.plot(df['Time'], df['FLOW2'], 'r--', label='FLOW2')
+                    ax2.set_ylabel('FLOW2')
+
             except KeyError:
                 print(f"Warning: Column {col} is missing. Skipping this column.")
             except Exception as e:
@@ -55,6 +63,52 @@ def plot_and_save(df, file_name):
     plt.tight_layout(rect=[0, 0.03, 1, 0.97])
     
     png_file_name = os.path.splitext(file_name)[0] + '.png'
+    fig.savefig(f'/tmp/{png_file_name}')
+    
+    return png_file_name
+
+def plot_selected_columns(df_filtered, file_name):
+    fig, axes = plt.subplots(2, 1, figsize=(10, 12))
+    axes = axes.flatten()
+
+    selected_sets = [
+        {'primary': [('FLOW2', 'orange'), ('MOT2', 'g')], 'secondary': [('GrvX', 'b')]},
+        {'primary': [('FLOW2', 'orange'), ('MOT2', 'g')], 'secondary': [('Pitch', 'b')]}
+    ]
+
+    for i, selected in enumerate(selected_sets):
+        ax1 = axes[i]
+        ax2 = ax1.twinx()
+
+        ax1.grid(True, which='major', axis='both')
+
+        # x軸にマイナーグリッドを適用
+        ax1.minorticks_on()
+        ax1.xaxis.grid(which='minor', linestyle='-.', linewidth='0.5', color='grey')
+
+        for col, col_color in selected['primary']:
+            if col in df_filtered.columns:
+                ax1.plot(df_filtered['Time'], df_filtered[col], label=f'{col} (left axis)', color=col_color)
+
+        for col, col_color in selected['secondary']:
+            if col in df_filtered.columns:
+                ax2.plot(df_filtered['Time'], df_filtered[col], label=f'{col} (right axis)', color=col_color, linestyle='--')
+
+        ax1.set_xlabel('Time(us)')
+
+        #custom_labels = ['モータON', 'モータ 100%', '', '加速', '走行', 'ジャンプ', 'ブレーキON待ち', 'ブレーキON', '回転抑制待ち', '回転抑制中', 'モータフリー']
+        custom_labels = ['Motor Off', 'Motor 100%', '', 'Accelerating', 'Running', 'Jumping', 'Waiting for Brake ON', 'Brake ON', 'Waiting for Rotation Suppression', 'Rotation Suppression Active', 'Motor Free']
+        ax1.set_yticks(range(0, 11))
+        ax1.set_yticklabels(custom_labels)
+
+        lines, labels = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax2.legend(lines + lines2, labels + labels2, loc='upper left')
+
+    plt.tight_layout()
+
+
+    png_file_name = os.path.splitext(file_name)[0] + '_selected_columns.png'
     fig.savefig(f'/tmp/{png_file_name}')
     
     return png_file_name
@@ -171,31 +225,43 @@ def lambda_handler(event, context):
 
 
         if file_type == 'log':
+            upload_to_s3_with_date(s3, file_data, bucket_name, file_name, experiment_date, experiment_number)
             header_to_add = "AD,AD1,AD2,AD3,AD4,AD5,AD6,AD7,AD8,FLOW,FLOW1,FLOW2,MOT,MOT1,MOT2,BLK1,BLK2"
             df = pd.read_csv(io.BytesIO(file_data), header=None, engine='python', on_bad_lines='skip')
             lines = io.StringIO(file_data.decode('utf-8')).readlines()
-            updated_first_line = f"{lines[0].strip()},{header_to_add}"
-            lines[0] = updated_first_line
-            updated_file_data = '\n'.join(lines).encode('utf-8')
-            upload_to_s3_with_date(s3, updated_file_data, bucket_name, file_name, experiment_date, experiment_number)
+
+            num_existing_columns = len(lines[0].split(','))
+            num_columns_to_add = len(header_to_add.split(','))
+
+            if num_existing_columns != num_columns_to_add:
+                updated_first_line = f"{lines[0].strip()},{header_to_add}"
+                lines[0] = updated_first_line
+                updated_file_data = '\n'.join(lines).encode('utf-8')
+                df = pd.read_csv(io.BytesIO(updated_file_data), on_bad_lines='skip')
+                #upload_to_s3_with_date(s3, updated_file_data, bucket_name, file_name, experiment_date, experiment_number)
             print(f"uploaded csv:{file_name}")
 
             # プロット
-            df = pd.read_csv(io.BytesIO(updated_file_data), on_bad_lines='skip')
             df = filter_imu_rows(df)
             df = convert_columns_to_numeric(df)
+            df = df[df['FLOW2'] <= 10]
             file_name_png = plot_and_save(df, file_name)
+            df = df[df['FLOW2'] >= 5]
+            selected_columns_png = plot_selected_columns(df, file_name)
             print(f"finish plot")
 
             # S3にpngファイルをアップロード
             s3_key_png = f"{experiment_date}/{experiment_number}/{file_name_png}"
             s3.upload_file(f'/tmp/{file_name_png}', bucket_name, s3_key_png)
+            s3_key_png = f"{experiment_date}/{experiment_number}/{selected_columns_png}"
+            s3.upload_file(f'/tmp/{selected_columns_png}', bucket_name, s3_key_png)
 
             item = {
                     'Date': experiment_date,
                     'OrderID': int(experiment_number),
                     'log_csv': file_name,
-                    'log_png': file_name_png,
+                    'log_png': selected_columns_png,
+                    'continuous': file_name_png,
                     'Message': message,
                 }
             print(f"post_item: {item}")
