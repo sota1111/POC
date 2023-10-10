@@ -352,7 +352,30 @@ class _DataTablePageState extends State<DataTablePage> {
                     isLoading = false;
                   });
                 },
-                child: const Text('download'),
+                child: const Text('DL'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                ),
+                onPressed: () async {
+                  bool result = await confirmSelectedRows();
+                  if (result) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StreamVideo(formattedDate:widget.formattedDate,  selectedRow:selectedRow)
+                      ),
+                    );
+
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
+                },
+                child: const Text('video'),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -398,31 +421,6 @@ class _DataTablePageState extends State<DataTablePage> {
                 },
                 child: const Text('graph'),
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                ),
-                onPressed: () async {
-                  bool result = await confirmSelectedRows();
-                  if (result) {
-                    setState(() {
-                      isLoading = true;
-                    });
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => StreamVideo(formattedDate:widget.formattedDate,  selectedRow:selectedRow)
-                      ),
-                    );
-
-                    setState(() {
-                      isLoading = false;
-                    });
-                  }
-                },
-                child: const Text('video'),
-              ),
-
             ],
           ),
           const SizedBox(height: 20),
