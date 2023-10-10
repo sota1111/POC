@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(StreamVideo());
 }
 
-class MyApp extends StatefulWidget {
+class StreamVideo extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _StreamVideoState createState() => _StreamVideoState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _StreamVideoState extends State<StreamVideo> {
   late VideoPlayerController _controller;
 
   @override
