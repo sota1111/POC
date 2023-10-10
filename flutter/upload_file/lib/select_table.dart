@@ -194,7 +194,7 @@ class _DataTablePageState extends State<DataTablePage> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
-                      dataRowHeight: 400,
+                      dataRowHeight: 200,
                       headingRowColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
                         return Colors.deepPurple;
                       }),
