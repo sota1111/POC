@@ -62,13 +62,16 @@ def plot_and_save(df, file_name):
 
 #custom_labels = ['モータON', 'モータ 100%', '', '加速', '走行', 'ジャンプ', 'ブレーキON待ち', 'ブレーキON', '回転抑制待ち', '回転抑制中', 'モータフリー']
 
-
 def plot_selected_columns(df_filtered, file_name):
+    # 新たなデータをdf_filteredに追加
+    df_filtered['GrvAvg'] = (df_filtered['GrvX'] + df_filtered['GrvY'] + df_filtered['GrvZ']) / 3
+
     fig, axes = plt.subplots(2, 1, figsize=(10, 12))
     axes = axes.flatten()
 
+    # 'GrvAvg'をsecondaryに追加
     selected_sets = [
-        {'primary': [('FLOW2', 'orange'), ('MOT2', 'g')], 'secondary': [('GrvX', 'b')]},
+        {'primary': [('FLOW2', 'orange'), ('MOT2', 'g')], 'secondary': [('GrvX', 'b'), ('GrvAvg', 'purple')]},
         {'primary': [('FLOW2', 'orange'), ('MOT2', 'g')], 'secondary': [('Pitch', 'b')]}
     ]
 
@@ -78,7 +81,6 @@ def plot_selected_columns(df_filtered, file_name):
 
         ax1.grid(True, which='major', axis='both')
 
-        # x軸にマイナーグリッドを適用
         ax1.minorticks_on()
         ax1.xaxis.grid(which='minor', linestyle='-.', linewidth='0.5', color='grey')
 
@@ -93,7 +95,7 @@ def plot_selected_columns(df_filtered, file_name):
         ax1.set_xlabel('Time(us)')
 
         custom_labels = ['モータON', 'モータ 100%', '', '加速', '走行', 'ジャンプ', 'ブレーキON待ち', 'ブレーキON', '回転抑制待ち', '回転抑制中', 'モータフリー']
-        #custom_labels = ['Motor Off', 'Motor 100%', '', 'Accelerating', 'Running', 'Jumping', 'Waiting for Brake ON', 'Brake ON', 'Waiting for Rotation Suppression', 'Rotation Suppression Active', 'Motor Free']
+
         ax1.set_yticks(range(0, 11))
         ax1.set_yticklabels(custom_labels)
 
@@ -113,8 +115,9 @@ def plot_selected_columns(df_filtered, file_name):
 
 
 
+
 def main():
-    file_path = './20231009221258_12回目.csv'
+    file_path = './log/20231010204340_18th.csv'
     file_name = os.path.basename(file_path)
     with open(file_path, 'rb') as f:
         file_data = f.read()
