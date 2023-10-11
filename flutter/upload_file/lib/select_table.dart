@@ -308,7 +308,7 @@ class _DataTablePageState extends State<DataTablePage> {
               ],
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -423,7 +423,7 @@ class _DataTablePageState extends State<DataTablePage> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
         ],
       ),
     );
