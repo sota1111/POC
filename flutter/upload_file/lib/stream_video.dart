@@ -15,7 +15,8 @@ class StreamVideo extends StatefulWidget {
 class _StreamVideoState extends State<StreamVideo> {
   late VideoPlayerController _controller;
   final FocusNode _focusNode = FocusNode();
-  bool _hasError = false;  // エラーフラグ
+  bool _hasError = false; // エラーフラグ
+  String _errorMessage = ''; // エラーメッセージ
 
   String generateVideoUrl(String formattedDate, String selectedRow) {
     return 'https://d26nj1ndv161pg.cloudfront.net/output/$formattedDate/$selectedRow/side.m3u8';
@@ -31,7 +32,8 @@ class _StreamVideoState extends State<StreamVideo> {
       setState(() {});
     }).catchError((error) {
       setState(() {
-        _hasError = true;  // エラーが発生した場合、フラグをtrueに設定
+        _hasError = true;
+        _errorMessage = error.toString();
       });
       print("Error Occurred: $error");
     });
@@ -60,7 +62,7 @@ class _StreamVideoState extends State<StreamVideo> {
           child: _hasError  // エラーフラグに基づいてUIを変更
               ? Stack(
             children: [
-              Center(child: Text("動画がupされてません")),
+              Center(child: Text("動画がupされてません\nエラー: $_errorMessage")),  // エラーメッセージも表示
               Positioned(
                 top: 10,
                 left: 10,
