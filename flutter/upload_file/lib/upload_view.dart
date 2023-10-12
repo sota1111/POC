@@ -23,6 +23,7 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   int? _selectedDay;
   int? _selectedNumber;
   String _fileType = "";
+  bool _isUploading = false;
   final TextEditingController _textEditingController = TextEditingController();
 
 
@@ -83,10 +84,14 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
     }
     setState(() {
       _uploadResponse = "ファイルをupload中";
+      _isUploading = true;
     });
     final base64FileData = base64Encode(_selectedFileBytes!);
     final response = await performFileUpload(base64FileData, _selectedFileName, _selectedMonth, _selectedDay, _selectedNumber, _textEditingController.text, _fileType);
     _updateUploadStatus(response);
+    setState(() {
+      _isUploading = false;
+    });
   }
 
   // Update the upload status
@@ -132,71 +137,68 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("実験日と実験番号、ファイルを選択し、\n送信ボタンを押してください。"),
-            const SizedBox(height: 30),
-
-            Row(
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("実験日:　"),
-                DropdownButton<int>(
-                  hint: Text('月'),
-                  value: _selectedMonth,
-                  items: List.generate(12, (index) {
-                    return DropdownMenuItem<int>(
-                      value: index + 1,
-                      child: Text((index + 1).toString()),
-                    );
-                  }),
-                  onChanged: (int? newValue) {
-                    setState(() {
-                      _selectedMonth = newValue;
-                    });
-                  },
+                const Text("実験日と実験番号、ファイルを選択し、\n送信ボタンを押してください。"),
+                const SizedBox(height: 30),
+                Row(
+                  children: [
+                    const Text("実験日:　"),
+                    DropdownButton<int>(
+                      hint: Text('月'),
+                      value: _selectedMonth,
+                      items: List.generate(12, (index) {
+                        return DropdownMenuItem<int>(
+                          value: index + 1,
+                          child: Text((index + 1).toString()),
+                        );
+                      }),
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          _selectedMonth = newValue;
+                        });
+                      },
+                    ),
+                    Text("/"),
+                    DropdownButton<int>(
+                      hint: Text('日'),
+                      value: _selectedDay,
+                      items: List.generate(31, (index) {
+                        return DropdownMenuItem<int>(
+                          value: index + 1,
+                          child: Text((index + 1).toString()),
+                        );
+                      }),
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          _selectedDay = newValue;
+                        });
+                      },
+                    ),
+                    Text("実験番号："),
+                    DropdownButton<int>(
+                      hint: Text('number'),
+                      value: _selectedNumber,
+                      items: List.generate(20, (index) {
+                        return DropdownMenuItem<int>(
+                          value: index + 1,
+                          child: Text((index + 1).toString()),
+                        );
+                      }),
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          _selectedNumber = newValue;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                Text("/"),
-                // 日を選択するためのドロップダウン
-                DropdownButton<int>(
-                  hint: Text('日'),
-                  value: _selectedDay,
-                  items: List.generate(31, (index) {
-                    return DropdownMenuItem<int>(
-                      value: index + 1,
-                      child: Text((index + 1).toString()),
-                    );
-                  }),
-                  onChanged: (int? newValue) {
-                    setState(() {
-                      _selectedDay = newValue;
-                    });
-                  },
-                ),
-                Text("実験番号："),
-                DropdownButton<int>(
-                  hint: Text('number'),
-                  value: _selectedNumber,
-                  items: List.generate(20, (index) {
-                    return DropdownMenuItem<int>(
-                      value: index + 1,
-                      child: Text((index + 1).toString()),
-                    );
-                  }),
-                  onChanged: (int? newValue) {
-                    setState(() {
-                      _selectedNumber = newValue;
-                    });
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+                const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: _pickCsvFile,
                   style: ElevatedButton.styleFrom(
@@ -204,53 +206,52 @@ class FileUploaderScreenState extends State<FileUploaderScreen> {
                   ),
                   child: const Text("CsvFile選択"),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const SizedBox(width: 10),
+                const SizedBox(height: 10),
                 Text("Selected File: $_selectedFileName"),
+                const SizedBox(height: 30),
+                TextField(
+                  controller: _textEditingController,
+                  decoration: const InputDecoration(
+                    hintText: '実験条件を記入してください。',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 4,
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: _isUploading ? null : _sendFileToServer,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text("送信"),
+                ),
+                const SizedBox(height: 10),
+                Text("Server Massage: $_uploadResponse"),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: _fetchServerData,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text("hello world"),
+                ),
+                const SizedBox(height: 10),
+                Text("Response: $_serverResponse"),
               ],
             ),
-            const SizedBox(height: 30),
-
-            TextField(
-              controller: _textEditingController,
-              decoration: const InputDecoration(
-                hintText: '実験条件を記入してください。\nここに記入した場合、\n既存の実験条件は上書きされます。',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 4,
-              style: const TextStyle(
-                fontSize: 18.0,
+          ),
+          if (_isUploading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.6),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ),
-            const SizedBox(height: 30),
-
-            ElevatedButton(
-              onPressed: _sendFileToServer,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-              ),
-              child: const Text("送信"),
-            ),
-            const SizedBox(height: 10),
-            Text("Server Massage: $_uploadResponse"),
-            const SizedBox(height: 30),
-
-            ElevatedButton(
-              onPressed: _fetchServerData,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-              ),
-              child: const Text("hello world"),
-            ),
-            const SizedBox(height: 10),
-            Text("Response: $_serverResponse"),
-          ],
-        ),
+        ],
       ),
     );
   }
+
 }

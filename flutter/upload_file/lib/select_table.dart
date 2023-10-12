@@ -223,22 +223,6 @@ class _DataTablePageState extends State<DataTablePage> {
                             ),
                           ),
                         ),
-                        DataColumn(
-                          label: Container(
-                            color: Colors.deepPurple,
-                            width: 100,
-                            child: const Text('trajectory',style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          label: Container(
-                            color: Colors.deepPurple,
-                            width: 100,
-                            child: const Text('continuous',style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
                       ],
                       rows: currentData.asMap().entries.map((entry) {
                         int index = entry.key;
@@ -261,8 +245,6 @@ class _DataTablePageState extends State<DataTablePage> {
                             DataCell(Text(item['OrderID'].toString())),
                             DataCell(Text(item['Message'].toString())),
                             DataCell(Text(item['log_csv'].toString())),
-                            DataCell(Text(item['trajectory'].toString())),
-                            DataCell(Text(item['continuous'].toString())),
                           ],
                         );
                       }).toList(),

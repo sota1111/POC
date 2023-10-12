@@ -97,8 +97,8 @@ def plot_selected_columns(df_filtered, file_name):
         ax1.set_xlabel('Time(us)')
 
         #custom_labels = ['モータON', 'モータ 100%', '', '加速', '走行', 'ジャンプ', 'ブレーキON待ち', 'ブレーキON', '回転抑制待ち', '回転抑制中', 'モータフリー']
-        custom_labels = ['Motor Off', 'Motor 100%', '', 'Accelerating', 'Running', 'Jumping', 'Waiting for Brake ON', 'Brake ON', 'Waiting for Rotation Suppression', 'Rotation Suppression Active', 'Motor Free']
-        ax1.set_yticks(range(0, 11))
+        custom_labels = ['Motor Off', 'Motor 100%', '', 'Accelerating', 'Running', 'Jumping', 'Waiting for Brake ON', 'Brake ON', 'Waiting for Rotation Suppression', 'Rotation Suppression Active', 'Motor Free', 'Waiting for Brake ON', 'Brake ON']
+        ax1.set_yticks(range(0, 13))
         ax1.set_yticklabels(custom_labels)
 
         lines, labels = ax1.get_legend_handles_labels()
@@ -244,7 +244,7 @@ def lambda_handler(event, context):
             # プロット
             df = filter_imu_rows(df)
             df = convert_columns_to_numeric(df)
-            df = df[df['FLOW2'] <= 10]
+            df = df[df['FLOW2'] <= 12]
             file_name_png = plot_and_save(df, file_name)
             df = df[df['FLOW2'] >= 5]
             selected_columns_png = plot_selected_columns(df, file_name)
