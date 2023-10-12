@@ -28,6 +28,17 @@ class _StreamVideoState extends State<StreamVideo> {
     String videoUrl = generateVideoUrl(widget.formattedDate, widget.selectedRow);
     print("videoUrl:$videoUrl");
     _controller = VideoPlayerController.network(videoUrl);
+
+    Future.delayed(Duration(seconds: 10), () {  // 10秒後に実行
+      if (!_controller.value.isInitialized) {
+        setState(() {
+          _hasError = true;
+          _errorMessage = 'Initialization Timeout';
+        });
+        print("Initialization Timeout");
+      }
+    });
+
     _controller.initialize().then((_) {
       setState(() {});
     }).catchError((error) {
@@ -42,6 +53,7 @@ class _StreamVideoState extends State<StreamVideo> {
       setState(() {});
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
